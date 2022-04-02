@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,8 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-public class UserModel {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,49 +23,54 @@ public class UserModel {
     private UUID uuid;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate birthDate;
+    @Column(nullable = false)
+    private LocalDate dataAniversario;
 
-    private String bio;
-    private String photo; // foto do usuário convertida em string
+    private String descricaoBio;
+
+    private String urlFoto;
+
+    @Column(unique = true, nullable = false)
     private String email;
-    private String whatsapp;
 
-    @OneToMany
-    private List<UserModel> seguindo;
+    private String numeroWhatsapp;
+
+    @OneToMany(cascade = CascadeType.MERGE)
+    @ToString.Exclude
+    private List<Usuario> seguindo;
 
     @ElementCollection
-    // @OneToMany // TODO: mudar quando mudar o tipo abaixo
+    //@OneToMany
     private List<String> postagens; // TODO: mudar para o tipo 'Postagem'
 
     @ElementCollection
-//    @OneToMany
-    private List<String> paginasCurtidas;
+    //@OneToMany
+    private List<String> paginasCurtidas; // TODO: mudar para o tipo 'Pagina'
 
     @ElementCollection
-//    @OneToMany
-    private List<String> paginasCriadas;
+    //@OneToMany
+    private List<String> paginasCriadas; // TODO: mudar para o tipo 'Pagina'
 
     @ElementCollection
-//    @OneToMany
-    private List<String> interessesPessoais;
+    //@OneToMany
+    private List<String> interessesPessoais; // TODO: mudar para o tipo 'Interesse'
 
     @Embedded
+    @Column(nullable = false)
     private Endereco endereco;
 
-    @Embedded
-    private Educacao locaisOndeEstudou;
+    @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Educacao> locaisOndeEstudou;
 
     private String visibilidadeDoPerfil;
 
     @ElementCollection
-//    @OneToMany
+    //@OneToMany
     private List<String> notificacoes;
-
-    private String visibilidade;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate contaCriadaEm;
-
 }
 
 

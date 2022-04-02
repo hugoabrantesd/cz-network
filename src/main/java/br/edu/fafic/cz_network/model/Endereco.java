@@ -19,7 +19,7 @@ public class Endereco {
 
     private String cidade;
 
-    private String pais;
+    private String nacionalidade;
 
     private String cep;
 
