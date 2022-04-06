@@ -13,22 +13,22 @@ import java.util.UUID;
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService(UsuarioRepository userRepository) {
-        this.userRepository = userRepository;
+    public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public Usuario save(Usuario user) {
+    public Usuario salvar(Usuario usuario) {
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            user.setContaCriadaEm(LocalDate.now());
-            String dataFormatada = formatter.format(user.getContaCriadaEm());
+            usuario.setContaCriadaEm(LocalDate.now());
+            String dataFormatada = formatter.format(usuario.getContaCriadaEm());
             LocalDate localDate = LocalDate.parse(dataFormatada, formatter);
-            user.setContaCriadaEm(localDate);
+            usuario.setContaCriadaEm(localDate);
 
-            return userRepository.save(user);
+            return usuarioRepository.save(usuario);
         } catch (Exception e) {
             System.out.println("Erro ao salvar usuário".toUpperCase());
             e.printStackTrace();
@@ -36,28 +36,41 @@ public class UsuarioService {
         }
     }
 
-    public String deleteUser(String id) {
-
+    public String deletar(String id) {
         try {
-            Usuario usuario = findUser(UUID.fromString(id));
+            Usuario usuario = buscarPorId(UUID.fromString(id));
             if (usuario != null) {
-                userRepository.delete(usuario);
+                usuarioRepository.delete(usuario);
                 return "Deletado com sucesso!";
             }
         } catch (IllegalArgumentException e) {
             return "Id inválido!";
         }
         return "Usuário não localizado!";
-
     }
 
-    public List<Usuario> findAllUsers() {
-        return userRepository.findAll();
+    public List<Usuario> buscarTodos() {
+        return usuarioRepository.findAll();
     }
 
-    public Usuario findUser(UUID uuid) {
-        Optional<Usuario> usuario = userRepository.findById(uuid);
+    public Usuario buscarPorId(UUID id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
         return usuario.orElse(null);
+    }
+
+    public Usuario atualizar(Usuario usuario) {
+        try {
+            Usuario usuarioEncontrado = buscarPorId(usuario.getId());
+            if (usuarioEncontrado != null) {
+                usuario.setContaCriadaEm(usuarioEncontrado.getContaCriadaEm());
+                return usuarioRepository.save(usuario);
+            }
+            return null;
+        } catch (Exception e) {
+            System.out.println("ERRO AO ATUALIZAR USUÁRIO");
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package br.edu.fafic.cz_network.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@DynamicUpdate
 public class Educacao {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
