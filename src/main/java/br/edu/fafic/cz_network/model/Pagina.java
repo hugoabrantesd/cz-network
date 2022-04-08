@@ -1,7 +1,6 @@
 package br.edu.fafic.cz_network.model;
 
 
-import br.edu.fafic.cz_network.enums.Categoria;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +30,7 @@ public class Pagina {
     private String usuario; //TODO: MUDAR PARA O TIPO "Usuario"
     private String visibilidade;
     private LocalDateTime dataHoraCriacao;
-    @Enumerated(EnumType.STRING)
+    @OneToOne
     private Categoria categoria;
 
 

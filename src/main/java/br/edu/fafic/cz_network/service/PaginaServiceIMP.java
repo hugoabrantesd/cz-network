@@ -28,18 +28,21 @@ public class PaginaServiceIMP implements PaginaService{
     }
 
     @Override
-    public Pagina atualizar(UUID id, Pagina pagina) {
-
-        Pagina paginaUpdate= findById(id);
-        paginaUpdate.setCategoria(pagina.getCategoria());
-        paginaUpdate.setFoto(pagina.getFoto());
-        paginaUpdate.setId(pagina.getId());
-        paginaUpdate.setNome(pagina.getNome());
-        paginaUpdate.setPostagens(pagina.getPostagens());
-        paginaUpdate.setSobre(pagina.getSobre());
-        paginaUpdate.setDataHoraCriacao(pagina.getDataHoraCriacao());
-        paginaUpdate.setVisibilidade(pagina.getVisibilidade());
-        paginaRepository.save(paginaUpdate);
+    public Pagina update(Pagina pagina) {
+        Pagina paginaUpdate= findById(pagina.getId());
+        if(paginaUpdate != null){
+            paginaUpdate = pagina;
+            paginaRepository.save(paginaUpdate);
+        }
+//        paginaUpdate.setCategoria(pagina.getCategoria());
+//        paginaUpdate.setFoto(pagina.getFoto());
+//        paginaUpdate.setId(pagina.getId());
+//        paginaUpdate.setNome(pagina.getNome());
+//        paginaUpdate.setPostagens(pagina.getPostagens());
+//        paginaUpdate.setSobre(pagina.getSobre());
+//        paginaUpdate.setDataHoraCriacao(pagina.getDataHoraCriacao());
+//        paginaUpdate.setVisibilidade(pagina.getVisibilidade());
+//        paginaRepository.save(paginaUpdate);
         return paginaUpdate;
     }
 
