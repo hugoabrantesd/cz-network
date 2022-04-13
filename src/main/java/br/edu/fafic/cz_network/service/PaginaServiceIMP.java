@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class PaginaServiceIMP implements PaginaService{
+public class PaginaServiceIMP implements PaginaService {
 
     @Autowired
     PaginaRepository paginaRepository;
@@ -29,8 +29,8 @@ public class PaginaServiceIMP implements PaginaService{
 
     @Override
     public Pagina update(Pagina pagina) {
-        Pagina paginaUpdate= findById(pagina.getId());
-        if(paginaUpdate != null){
+        Pagina paginaUpdate = findById(pagina.getId());
+        if (paginaUpdate != null) {
             paginaUpdate = pagina;
             paginaRepository.save(paginaUpdate);
         }
@@ -49,7 +49,7 @@ public class PaginaServiceIMP implements PaginaService{
     @Override
     public Pagina findById(UUID id) {
         Optional<Pagina> paginaOptional = paginaRepository.findById(id);
-        return paginaOptional.orElseThrow(()->new RuntimeException("Pagina não encontrada!!"));
+        return paginaOptional.orElseThrow(() -> new RuntimeException("Pagina não encontrada!!"));
     }
 
     @Override

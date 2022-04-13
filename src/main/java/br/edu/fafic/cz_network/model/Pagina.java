@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,11 +27,11 @@ public class Pagina {
     private String foto;
     @OneToMany
     private List<Postagem> postagens;
-   // private List<String> curtidores; //TODO: MUDAR PARA O TIPO "Usuario"
-    private String usuario; //TODO: MUDAR PARA O TIPO "Usuario"
+    ///private List<Usuario> curtidores; //TODO: MUDAR PARA O TIPO "Usuario"
+    private String usuario;
     private String visibilidade;
     private LocalDateTime dataHoraCriacao;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Categoria categoria;
 
 

@@ -24,6 +24,6 @@ public class Comentario {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String texto;
-    private String usuario; //TODO: MUDAR PARA O TIPO "Usuario"
+    private String usuario;
     private LocalDateTime dataHoraComentario;
 }
