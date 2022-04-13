@@ -9,7 +9,7 @@ public interface PaginaService {
 
    Pagina save(Pagina pagina);
    Pagina delete(Pagina pagina);
-   Pagina atualizar(UUID id, Pagina pagina);
+   Pagina update(Pagina pagina);
    Pagina findById(UUID id);
    List<Pagina> listar();
 }

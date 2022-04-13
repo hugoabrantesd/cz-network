@@ -1,5 +1,6 @@
 package br.edu.fafic.cz_network.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,9 @@ public class Postagem {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Comentario> comentarios;
     private Integer numeroCompartilhamentos;
-    private String usuario; //TODO: MUDAR PARA O TIPO "Usuario"
+    @OneToOne
+    private Usuario usuario;
+   // @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime dataHoraPostagem;
 
 
