@@ -27,7 +27,7 @@ public class Pagina {
     private String foto;
     @OneToMany
     private List<Postagem> postagens;
-    ///private List<Usuario> curtidores; //TODO: MUDAR PARA O TIPO "Usuario"
+    //private List<Usuario> curtidores; TODO: MUDAR PARA O TIPO "Usuario"
     private String usuario;
     private String visibilidade;
     private LocalDateTime dataHoraCriacao;

@@ -22,20 +22,20 @@ public class PaginaControler {
     public ResponseEntity save(@RequestBody Pagina pagina){
         return ResponseEntity.ok().body(paginaServiceIMP.save(pagina));
     }
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity delete(@RequestBody Pagina pagina){
         paginaServiceIMP.delete(pagina);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity update(@RequestBody Pagina pagina){
         return ResponseEntity.ok().body(paginaServiceIMP.update(pagina));
     }
-    @GetMapping("/search/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity search(@PathVariable UUID id){
         return ResponseEntity.ok().body(paginaServiceIMP.findById(id));
     }
-    @GetMapping("/search/all")
+    @GetMapping("/get-all")
     public ResponseEntity all(){
         return ResponseEntity.ok().body(paginaServiceIMP.listar());
     }

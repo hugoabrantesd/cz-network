@@ -24,20 +24,20 @@ public class PostagemControler {
         return ResponseEntity.ok().body(postagemServiceIMP.save(postagem));
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity delete(@RequestBody Postagem postagem){
         postagemServiceIMP.delete(postagem);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity update(@RequestBody Postagem postagem){
         return ResponseEntity.ok().body(postagemServiceIMP.update(postagem));
     }
-    @GetMapping("/search/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity search(@PathVariable UUID id){
         return ResponseEntity.ok().body(postagemServiceIMP.findById(id));
     }
-    @GetMapping("/search/all")
+    @GetMapping("/get-all")
     public ResponseEntity all(){
         return ResponseEntity.ok().body(postagemServiceIMP.listar());
     }
