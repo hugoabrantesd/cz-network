@@ -73,7 +73,7 @@ public class UsuarioService {
         }
     }
 
-    public Usuario criarAtualizarInteresses(UUID id, List<Interesses> interesses) {
+    public Usuario criarOuAtualizarInteresses(UUID id, List<Interesses> interesses) {
         Usuario usuarioEncontrado = buscarPorId(id);
         if (usuarioEncontrado != null) {
 
@@ -86,7 +86,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario criarAtualizarInteresses(UUID id, LinkedTreeMap<String, Object> jsonInteresses) {
+    public Usuario criarOuAtualizarInteresses(UUID id, LinkedTreeMap<String, Object> jsonInteresses) {
         List<HashMap<String, String>> dados =
                 (List<HashMap<String, String>>) jsonInteresses.get("interessesPessoais");
         List<Interesses> interessesObtidos = new ArrayList<>();

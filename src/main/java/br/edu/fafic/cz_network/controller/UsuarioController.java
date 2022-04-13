@@ -59,11 +59,11 @@ public class UsuarioController {
         return ResponseEntity.badRequest().body("[]");
     }
 
-    @PatchMapping(value = "/atualizar-interesses/{id}")
+    @PatchMapping(value = "/interesses/atualizar-interesses/{id}")
     public ResponseEntity<Object> atualizarInteresses(
             @RequestBody LinkedTreeMap<String, Object> interesses, @PathVariable UUID id) {
 
-        Usuario usuarioAtualizado = usuarioService.criarAtualizarInteresses(id, interesses);
+        Usuario usuarioAtualizado = usuarioService.criarOuAtualizarInteresses(id, interesses);
         if (usuarioAtualizado != null) {
             return ResponseEntity.ok().body(usuarioAtualizado);
         } else {
@@ -71,7 +71,7 @@ public class UsuarioController {
         }
     }
 
-    @DeleteMapping(value = "/deletar-interesse/{idUsuario}/{idInteresse}")
+    @DeleteMapping(value = "/interesses/deletar-interesse/{idUsuario}/{idInteresse}")
     public ResponseEntity<Object> deletarInteresse(
             @PathVariable UUID idUsuario, @PathVariable Integer idInteresse) {
 
