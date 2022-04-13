@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -16,12 +17,10 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
-@ToString
-public class Usuario {
+public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false, name = "id")
     private UUID id;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
@@ -41,17 +40,17 @@ public class Usuario {
     @ToString.Exclude
     private List<Usuario> seguindo;
 
-    @ElementCollection
-    private List<String> postagens; // TODO: mudar para o tipo 'Postagem'
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Postagem> postagens;
 
-    @ElementCollection
-    private List<String> paginasCurtidas; // TODO: mudar para o tipo 'Pagina'
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Pagina> paginasCurtidas;
 
-    @ElementCollection
-    private List<String> paginasCriadas; // TODO: mudar para o tipo 'Pagina'
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Pagina> paginasCriadas;
 
-    @ElementCollection
-    private List<String> interessesPessoais; // TODO: mudar para o tipo 'Interesse'
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Interesses> interessesPessoais;
 
     @Embedded
     @Column(nullable = false)
@@ -69,12 +68,4 @@ public class Usuario {
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate contaCriadaEm;
 }
-
-
-
-
-
-
-
-
 
