@@ -1,14 +1,14 @@
 package br.edu.fafic.cz_network.service;
 
+import br.edu.fafic.cz_network.model.Interesses;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
+import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UsuarioService {
@@ -73,4 +73,67 @@ public class UsuarioService {
         }
     }
 
+    public Usuario criarOuAtualizarInteresses(UUID id, List<Interesses> interesses) {
+        Usuario usuarioEncontrado = buscarPorId(id);
+        if (usuarioEncontrado != null) {
+
+            System.out.println(usuarioEncontrado.toString());
+
+            usuarioEncontrado.setInteressesPessoais(interesses);
+            salvar(usuarioEncontrado);
+            return usuarioEncontrado;
+        }
+        return null;
+    }
+
+    public Usuario criarOuAtualizarInteresses(UUID id, LinkedTreeMap<String, Object> jsonInteresses) {
+        List<HashMap<String, String>> dados =
+                (List<HashMap<String, String>>) jsonInteresses.get("interessesPessoais");
+        List<Interesses> interessesObtidos = new ArrayList<>();
+
+        for (HashMap<String, String> interessesPessoais : dados) {
+            Interesses in = Interesses.builder().build();
+            in.setInteresses(interessesPessoais.get("interesses"));
+            interessesObtidos.add(in);
+        }
+
+        if (!interessesObtidos.isEmpty()) {
+            Usuario usuarioEncontrado = buscarPorId(id);
+            if (usuarioEncontrado != null) {
+                System.out.println(usuarioEncontrado.toString());
+
+                usuarioEncontrado.setInteressesPessoais(interessesObtidos);
+                salvar(usuarioEncontrado);
+                return usuarioEncontrado;
+            }
+        }
+        return null;
+    }
+
+    public boolean deletarInteresses(UUID idUsuario, Integer idInteresse) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+        boolean interesseDeletado = false;
+        if (usuarioEncontrado != null) {
+            List<Interesses> interesses = usuarioEncontrado.getInteressesPessoais();
+
+            for (Interesses in : interesses) {
+                if (Objects.equals(in.getId(), idInteresse)) {
+                    interesses.remove(in);
+                    interesseDeletado = true;
+                    break;
+                }
+            }
+            usuarioRepository.save(usuarioEncontrado);
+
+        }
+        return interesseDeletado;
+    }
+
+    public List<Interesses> buscarTodosOsInteresses(UUID idUsuario) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+        if (usuarioEncontrado != null) {
+            return usuarioEncontrado.getInteressesPessoais();
+        }
+        return null;
+    }
 }
