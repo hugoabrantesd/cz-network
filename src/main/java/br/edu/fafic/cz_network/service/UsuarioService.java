@@ -1,7 +1,9 @@
 package br.edu.fafic.cz_network.service;
 
+import br.edu.fafic.cz_network.model.Educacao;
 import br.edu.fafic.cz_network.model.Interesses;
 import br.edu.fafic.cz_network.model.Usuario;
+import br.edu.fafic.cz_network.repository.EducacaoRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,11 @@ import java.util.*;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final EducacaoRepository educacaoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, EducacaoRepository educacaoRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.educacaoRepository = educacaoRepository;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -136,4 +140,106 @@ public class UsuarioService {
         }
         return null;
     }
+
+    public Usuario addEducacao(LinkedTreeMap<String, Object> educacaoList, UUID idUsuario) {
+        List<HashMap<String, String>> dados =
+                (List<HashMap<String, String>>) educacaoList.get("educacao");
+
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            String entrada;
+            String saida;
+            String conclusao;
+
+            LocalDate dataEntrada;
+            LocalDate dataSaida;
+            LocalDate dataConclusao;
+
+            for (HashMap<String, String> educacao : dados) {
+
+                entrada = educacao.get("dataEntrada");
+                saida = educacao.get("dataSaida");
+                conclusao = educacao.get("dataConclusao");
+
+                Educacao edu = Educacao.builder()
+                        .nomeEscola(educacao.get("nomeEscola"))
+                        .grau(educacao.get("grau"))
+                        .curso(educacao.get("curso"))
+                        .build();
+
+                if (entrada != null && !entrada.isEmpty()) {
+                    dataEntrada = LocalDate.parse(entrada, dateTimeFormatter);
+                    edu.setDataEntrada(dataEntrada);
+                }
+                if (saida != null && !saida.isEmpty()) {
+                    dataSaida = LocalDate.parse(saida, dateTimeFormatter);
+                    edu.setDataSaida(dataSaida);
+                }
+                if (conclusao != null && !conclusao.isEmpty()) {
+                    dataConclusao = LocalDate.parse(conclusao, dateTimeFormatter);
+                    edu.setDataConclusao(dataConclusao);
+                }
+
+                usuario.getEducacao().add(edu);
+            }
+            return usuarioRepository.save(usuario);
+        }
+        return null;
+    }
+
+    public Usuario atualizarEducacao(UUID idUsuario, Educacao educacao) {
+        final Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            for (Educacao edu : usuario.getEducacao()) {
+                if (edu.getId().toString().toUpperCase(Locale.ROOT)
+                        .equals(educacao.getId().toString().toUpperCase(Locale.ROOT))) {
+
+                    usuario.getEducacao().remove(edu);
+                    usuario.getEducacao().add(educacao);
+                    break;
+                }
+            }
+            return usuarioRepository.save(usuario);
+        }
+        return null;
+    }
+
+    public Usuario deletarEducacao(UUID idEducacao, UUID idUsuario) {
+        final Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            for (Educacao edu : usuario.getEducacao()) {
+                if (edu.getId().toString().toUpperCase(Locale.ROOT)
+                        .equals(idEducacao.toString().toUpperCase(Locale.ROOT))) {
+                    usuario.getEducacao().remove(edu);
+                    educacaoRepository.delete(edu);
+                    break;
+                }
+            }
+            return usuarioRepository.save(usuario);
+        }
+        return null;
+    }
+
+    public Usuario deletarTodaEducacao(UUID idUsuario) {
+        final Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            usuario.getEducacao().clear();
+            educacaoRepository.deleteAll();
+            return usuarioRepository.save(usuario);
+        }
+        return null;
+    }
+
 }
+
+
+
+
+
+

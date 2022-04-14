@@ -1,5 +1,6 @@
 package br.edu.fafic.cz_network.controller;
 
+import br.edu.fafic.cz_network.model.Educacao;
 import br.edu.fafic.cz_network.model.Interesses;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.service.UsuarioService;
@@ -7,7 +8,9 @@ import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/usuario")
@@ -87,10 +90,40 @@ public class UsuarioController {
     public ResponseEntity<Object> buscarInteresses(@PathVariable UUID idUsuario) {
         List<Interesses> interesses = usuarioService.buscarTodosOsInteresses(idUsuario);
 
-        if (interesses != null) {
-            return ResponseEntity.ok().body(interesses);
-        }
-        return ResponseEntity.ok().body("Ocorreu um erro!");
+        return ResponseEntity.ok().body(Objects.requireNonNullElse(interesses, "Ocorreu um erro!"));
+    }
+
+    @PostMapping(value = "/educacao/add/{idUsuario}")
+    public ResponseEntity<Object> criarOuAtualizarEducacao(
+            @PathVariable UUID idUsuario, @RequestBody LinkedTreeMap<String, Object> educacao) {
+        Usuario usuarioComEducacaoAtualizada = usuarioService.addEducacao(educacao, idUsuario);
+        return ResponseEntity.ok().body(Objects.requireNonNullElse(
+                usuarioComEducacaoAtualizada, "Ocorreu um erro!"));
+    }
+
+    @PatchMapping(value = "/educacao/atualizar/{idUsuario}")
+    public ResponseEntity<Object> atualizarEducacao(
+            @PathVariable UUID idUsuario, @RequestBody Educacao educacao) {
+
+        Usuario usuarioComEducacaoAtualizada = usuarioService.atualizarEducacao(idUsuario, educacao);
+
+        return ResponseEntity.ok().body(Objects.requireNonNullElse(
+                usuarioComEducacaoAtualizada, "Ocorreu um erro!"));
+    }
+
+    @DeleteMapping(value = "/educacao/deletar/{idUsuario}/{idEducacao}")
+    public ResponseEntity<Object> deletarEducacao(
+            @PathVariable UUID idUsuario, @PathVariable UUID idEducacao) {
+        Usuario usuarioComEducacaoAtualizada = usuarioService.deletarEducacao(idEducacao, idUsuario);
+        return ResponseEntity.ok().body(Objects.requireNonNullElse(
+                usuarioComEducacaoAtualizada, "Ocorreu um erro!"));
+    }
+
+    @DeleteMapping(value = "/educacao/deletar-toda-educacao/{idUsuario}")
+    public ResponseEntity<Object> deletarTodaEducacao(@PathVariable UUID idUsuario) {
+        Usuario usuarioComEducacaoAtualizada = usuarioService.deletarTodaEducacao(idUsuario);
+        return ResponseEntity.ok().body(Objects.requireNonNullElse(
+                usuarioComEducacaoAtualizada, "Ocorreu um erro!"));
     }
 
 }
