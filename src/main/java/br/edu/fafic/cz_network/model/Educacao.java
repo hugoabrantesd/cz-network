@@ -2,12 +2,12 @@ package br.edu.fafic.cz_network.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,8 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@DynamicUpdate
-public class Educacao {
+public class Educacao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -37,6 +36,6 @@ public class Educacao {
     private LocalDate dataSaida;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate concluido;
+    private LocalDate dataConclusao;
 
 }
