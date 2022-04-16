@@ -3,10 +3,7 @@ package br.edu.fafic.cz_network.service;
 import br.edu.fafic.cz_network.model.Educacao;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
-import br.edu.fafic.cz_network.repository.EducacaoRepository;
-import br.edu.fafic.cz_network.repository.InteressesRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
-import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,15 +14,9 @@ import java.util.*;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final EducacaoRepository educacaoRepository;
-    private final InteressesRepository interessesRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository,
-                          EducacaoRepository educacaoRepository,
-                          InteressesRepository interessesRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.educacaoRepository = educacaoRepository;
-        this.interessesRepository = interessesRepository;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -104,10 +95,9 @@ public class UsuarioService {
 
                     usuarioEncontrado.getInteressesPessoais().remove(in);
                     usuarioEncontrado.getInteressesPessoais().add(interesse);
-                    break;
+                    return salvar(usuarioEncontrado);
                 }
             }
-            return salvar(usuarioEncontrado);
         }
         return null;
     }
@@ -126,61 +116,22 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deletarTodosInteresses(UUID idUsuario) throws InterruptedException {
+    public Usuario deletarTodosInteresses(UUID idUsuario) {
         final Usuario usuario = buscarPorId(idUsuario);
 
-        if (usuario != null) {
+        if (usuario != null && !usuario.getInteressesPessoais().isEmpty()) {
             usuario.getInteressesPessoais().clear();
-            usuarioRepository.save(usuario);
-            interessesRepository.deleteAll(usuario.getInteressesPessoais());
-            return usuario;
+            return usuarioRepository.save(usuario);
         }
         return null;
     }
 
-    public Usuario addEducacao(LinkedTreeMap<String, Object> educacaoList, UUID idUsuario) {
-        List<HashMap<String, String>> dados =
-                (List<HashMap<String, String>>) educacaoList.get("educacao");
-
+    public Usuario adicionarEducacao(List<Educacao> educacaoList, UUID idUsuario) {
         Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-            String entrada;
-            String saida;
-            String conclusao;
-
-            LocalDate dataEntrada;
-            LocalDate dataSaida;
-            LocalDate dataConclusao;
-
-            for (HashMap<String, String> educacao : dados) {
-
-                entrada = educacao.get("dataEntrada");
-                saida = educacao.get("dataSaida");
-                conclusao = educacao.get("dataConclusao");
-
-                Educacao edu = Educacao.builder()
-                        .nomeEscola(educacao.get("nomeEscola"))
-                        .grau(educacao.get("grau"))
-                        .curso(educacao.get("curso"))
-                        .build();
-
-                if (entrada != null && !entrada.isEmpty()) {
-                    dataEntrada = LocalDate.parse(entrada, dateTimeFormatter);
-                    edu.setDataEntrada(dataEntrada);
-                }
-                if (saida != null && !saida.isEmpty()) {
-                    dataSaida = LocalDate.parse(saida, dateTimeFormatter);
-                    edu.setDataSaida(dataSaida);
-                }
-                if (conclusao != null && !conclusao.isEmpty()) {
-                    dataConclusao = LocalDate.parse(conclusao, dateTimeFormatter);
-                    edu.setDataConclusao(dataConclusao);
-                }
-
-                usuario.getEducacao().add(edu);
+            for (Educacao educacao : educacaoList) {
+                usuario.getEducacao().add(educacao);
             }
             return usuarioRepository.save(usuario);
         }
@@ -197,15 +148,14 @@ public class UsuarioService {
 
                     usuario.getEducacao().remove(edu);
                     usuario.getEducacao().add(educacao);
-                    break;
+                    return usuarioRepository.save(usuario);
                 }
             }
-            return usuarioRepository.save(usuario);
         }
         return null;
     }
 
-    public Usuario deletarEducacao(UUID idEducacao, UUID idUsuario) {
+    public Usuario deletarEducacao(UUID idUsuario, UUID idEducacao) {
         final Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -213,11 +163,9 @@ public class UsuarioService {
                 if (edu.getId().toString().toUpperCase(Locale.ROOT)
                         .equals(idEducacao.toString().toUpperCase(Locale.ROOT))) {
                     usuario.getEducacao().remove(edu);
-                    educacaoRepository.delete(edu);
-                    break;
+                    return usuarioRepository.save(usuario);
                 }
             }
-            return usuarioRepository.save(usuario);
         }
         return null;
     }
@@ -225,9 +173,8 @@ public class UsuarioService {
     public Usuario deletarTodaEducacao(UUID idUsuario) {
         final Usuario usuario = buscarPorId(idUsuario);
 
-        if (usuario != null) {
+        if (usuario != null && !usuario.getEducacao().isEmpty()) {
             usuario.getEducacao().clear();
-            educacaoRepository.deleteAll();
             return usuarioRepository.save(usuario);
         }
         return null;

@@ -18,6 +18,7 @@ import java.util.UUID;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final String MENSAGEM_ERRO = "Erro!";
 
     public UsuarioController(UsuarioService userService) {
         this.usuarioService = userService;
@@ -53,10 +54,13 @@ public class UsuarioController {
 
         try {
             Usuario usuario = usuarioService.buscarPorId(UUID.fromString(id));
-            return ResponseEntity.ok()
-                    .body(Objects.requireNonNullElse(usuario, "[]"));
+
+            if (usuario != null) {
+                return ResponseEntity.ok().body(usuario);
+            }
+            return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body("");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body("Id inválido!");
+            return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body("");
         }
     }
 
@@ -71,14 +75,15 @@ public class UsuarioController {
 
     @PostMapping(value = "/interesses/criar/{idUsuario}")
     public ResponseEntity<Object> addInteresses(
-            @RequestBody LinkedTreeMap<String, List<InteressesPessoais>> interesses, @PathVariable UUID idUsuario) {
+            @RequestBody LinkedTreeMap<String, List<InteressesPessoais>> interesses,
+            @PathVariable UUID idUsuario) {
 
         Usuario usuarioAtualizado = usuarioService
                 .criarInteresse(idUsuario, interesses.get("interessesPessoais"));
         if (usuarioAtualizado != null) {
             return ResponseEntity.status(CodigosHTTP.CREATED).body(usuarioAtualizado);
         } else {
-            return ResponseEntity.badRequest().body("Ocorreu um erro!");
+            return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
         }
     }
 
@@ -91,7 +96,7 @@ public class UsuarioController {
         if (usuarioAtualizado != null) {
             return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
         } else {
-            return ResponseEntity.badRequest().body("Ocorreu um erro!");
+            return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
         }
     }
 
@@ -104,7 +109,7 @@ public class UsuarioController {
         if (usuarioAtualizado != null) {
             return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
         }
-        return ResponseEntity.badRequest().body("Ocorreu um erro!");
+        return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
     }
 
     @DeleteMapping(value = "/interesses/deletar-todos/{idUsuario}")
@@ -114,15 +119,19 @@ public class UsuarioController {
         if (usuarioAtualizado != null) {
             return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
         }
-        return ResponseEntity.badRequest().body("Ocorreu um erro!");
+        return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
     }
 
-    @PostMapping(value = "/educacao/add/{idUsuario}")
-    public ResponseEntity<Object> criarOuAtualizarEducacao(
-            @PathVariable UUID idUsuario, @RequestBody LinkedTreeMap<String, Object> educacao) {
-        Usuario usuarioComEducacaoAtualizada = usuarioService.addEducacao(educacao, idUsuario);
-        return ResponseEntity.status(CodigosHTTP.CREATED).body(Objects.requireNonNullElse(
-                usuarioComEducacaoAtualizada, "Ocorreu um erro!"));
+    @PostMapping(value = "/educacao/adicionar/{idUsuario}")
+    public ResponseEntity<Object> adicionarEducacao(
+            @PathVariable UUID idUsuario, @RequestBody LinkedTreeMap<String, List<Educacao>> educacaoList) {
+        Usuario usuarioComEducacaoAtualizada = usuarioService
+                .adicionarEducacao(educacaoList.get("educacao"), idUsuario);
+
+        if (usuarioComEducacaoAtualizada != null) {
+            return ResponseEntity.status(CodigosHTTP.CREATED).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
     @PatchMapping(value = "/educacao/atualizar/{idUsuario}")
@@ -131,23 +140,33 @@ public class UsuarioController {
 
         Usuario usuarioComEducacaoAtualizada = usuarioService.atualizarEducacao(idUsuario, educacao);
 
-        return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body(Objects.requireNonNullElse(
-                "", "Ocorreu um erro!"));
+        if (usuarioComEducacaoAtualizada != null) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
     @DeleteMapping(value = "/educacao/deletar/{idUsuario}/{idEducacao}")
     public ResponseEntity<Object> deletarEducacao(
-            @PathVariable UUID idUsuario, @PathVariable UUID idEducacao) {
-        Usuario usuarioComEducacaoAtualizada = usuarioService.deletarEducacao(idEducacao, idUsuario);
-        return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body(Objects.requireNonNullElse(
-                "", "Ocorreu um erro!"));
+            @PathVariable UUID idUsuario,
+            @PathVariable UUID idEducacao) {
+
+        Usuario usuarioComEducacaoAtualizada = usuarioService.deletarEducacao(idUsuario, idEducacao);
+
+        if (usuarioComEducacaoAtualizada != null) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
     @DeleteMapping(value = "/educacao/deletar-toda-educacao/{idUsuario}")
     public ResponseEntity<Object> deletarTodaEducacao(@PathVariable UUID idUsuario) {
         Usuario usuarioComEducacaoAtualizada = usuarioService.deletarTodaEducacao(idUsuario);
-        return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body(Objects.requireNonNullElse(
-                "", "Ocorreu um erro!"));
+
+        if (usuarioComEducacaoAtualizada != null) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
 }
