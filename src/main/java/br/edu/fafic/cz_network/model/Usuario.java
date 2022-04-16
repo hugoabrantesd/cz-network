@@ -49,14 +49,14 @@ public class Usuario implements Serializable {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Pagina> paginasCriadas;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Interesses> interessesPessoais;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InteressesPessoais> interessesPessoais;
 
     @Embedded
     @Column(nullable = false)
     private Endereco endereco;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Educacao> educacao;
 
