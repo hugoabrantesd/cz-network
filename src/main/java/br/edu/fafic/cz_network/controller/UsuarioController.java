@@ -1,7 +1,7 @@
 package br.edu.fafic.cz_network.controller;
 
 import br.edu.fafic.cz_network.model.Educacao;
-import br.edu.fafic.cz_network.model.Interesses;
+import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.service.UsuarioService;
 import com.google.gson.internal.LinkedTreeMap;
@@ -62,11 +62,12 @@ public class UsuarioController {
         return ResponseEntity.badRequest().body("[]");
     }
 
-    @PatchMapping(value = "/interesses/atualizar-interesses/{id}")
-    public ResponseEntity<Object> atualizarInteresses(
-            @RequestBody LinkedTreeMap<String, Object> interesses, @PathVariable UUID id) {
+    @PostMapping(value = "/interesses/add/{idUsuario}")
+    public ResponseEntity<Object> addInteresses(
+            @RequestBody LinkedTreeMap<String, List<InteressesPessoais>> interesses, @PathVariable UUID idUsuario) {
 
-        Usuario usuarioAtualizado = usuarioService.criarOuAtualizarInteresses(id, interesses);
+        Usuario usuarioAtualizado = usuarioService
+                .addInteresses(idUsuario, interesses.get("interessesPessoais"));
         if (usuarioAtualizado != null) {
             return ResponseEntity.ok().body(usuarioAtualizado);
         } else {
@@ -74,23 +75,39 @@ public class UsuarioController {
         }
     }
 
-    @DeleteMapping(value = "/interesses/deletar-interesse/{idUsuario}/{idInteresse}")
-    public ResponseEntity<Object> deletarInteresse(
-            @PathVariable UUID idUsuario, @PathVariable Integer idInteresse) {
+    @PatchMapping(value = "/interesses/atualizar/{idUsuario}")
+    public ResponseEntity<Object> atualizarInteresses(
+            @RequestBody InteressesPessoais interesse,
+            @PathVariable UUID idUsuario) {
 
-        boolean interesseDeletado = usuarioService.deletarInteresses(idUsuario, idInteresse);
-        if (interesseDeletado) {
-            return ResponseEntity.ok().body("Interesse deletado com sucesso!");
+        Usuario usuarioAtualizado = usuarioService.atualizarInteresse(idUsuario, interesse);
+        if (usuarioAtualizado != null) {
+            return ResponseEntity.ok().body(usuarioAtualizado);
+        } else {
+            return ResponseEntity.badRequest().body("Ocorreu um erro!");
         }
-        return ResponseEntity.badRequest().body("Ocorreu um erro!");
-
     }
 
-    @GetMapping(value = "/interesses/buscar-todos/{idUsuario}")
-    public ResponseEntity<Object> buscarInteresses(@PathVariable UUID idUsuario) {
-        List<Interesses> interesses = usuarioService.buscarTodosOsInteresses(idUsuario);
+    @DeleteMapping(value = "/interesses/deletar/{idUsuario}/{idInteresse}")
+    public ResponseEntity<Object> deletarInteresse(
+            @PathVariable UUID idUsuario,
+            @PathVariable UUID idInteresse) {
 
-        return ResponseEntity.ok().body(Objects.requireNonNullElse(interesses, "Ocorreu um erro!"));
+        Usuario usuarioAtualizado = usuarioService.deletarInteresse(idUsuario, idInteresse);
+        if (usuarioAtualizado != null) {
+            return ResponseEntity.ok().body(usuarioAtualizado);
+        }
+        return ResponseEntity.badRequest().body("Ocorreu um erro!");
+    }
+
+    @DeleteMapping(value = "/interesses/deletar-todos/{idUsuario}")
+    public ResponseEntity<Object> deletarTodosInteresse(@PathVariable UUID idUsuario) throws InterruptedException {
+
+        Usuario usuarioAtualizado = usuarioService.deletarTodosInteresse(idUsuario);
+        if (usuarioAtualizado != null) {
+            return ResponseEntity.ok().body(usuarioAtualizado);
+        }
+        return ResponseEntity.badRequest().body("Ocorreu um erro!");
     }
 
     @PostMapping(value = "/educacao/add/{idUsuario}")

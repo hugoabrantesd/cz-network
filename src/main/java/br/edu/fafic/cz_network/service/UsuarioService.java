@@ -1,9 +1,10 @@
 package br.edu.fafic.cz_network.service;
 
 import br.edu.fafic.cz_network.model.Educacao;
-import br.edu.fafic.cz_network.model.Interesses;
+import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.repository.EducacaoRepository;
+import br.edu.fafic.cz_network.repository.InteressesRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,14 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final EducacaoRepository educacaoRepository;
+    private final InteressesRepository interessesRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, EducacaoRepository educacaoRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          EducacaoRepository educacaoRepository,
+                          InteressesRepository interessesRepository) {
         this.usuarioRepository = usuarioRepository;
         this.educacaoRepository = educacaoRepository;
+        this.interessesRepository = interessesRepository;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -77,66 +82,58 @@ public class UsuarioService {
         }
     }
 
-    public Usuario criarOuAtualizarInteresses(UUID id, List<Interesses> interesses) {
-        Usuario usuarioEncontrado = buscarPorId(id);
-        if (usuarioEncontrado != null) {
-
-            System.out.println(usuarioEncontrado.toString());
-
-            usuarioEncontrado.setInteressesPessoais(interesses);
-            salvar(usuarioEncontrado);
-            return usuarioEncontrado;
-        }
-        return null;
-    }
-
-    public Usuario criarOuAtualizarInteresses(UUID id, LinkedTreeMap<String, Object> jsonInteresses) {
-        List<HashMap<String, String>> dados =
-                (List<HashMap<String, String>>) jsonInteresses.get("interessesPessoais");
-        List<Interesses> interessesObtidos = new ArrayList<>();
-
-        for (HashMap<String, String> interessesPessoais : dados) {
-            Interesses in = Interesses.builder().build();
-            in.setInteresses(interessesPessoais.get("interesses"));
-            interessesObtidos.add(in);
-        }
-
-        if (!interessesObtidos.isEmpty()) {
-            Usuario usuarioEncontrado = buscarPorId(id);
-            if (usuarioEncontrado != null) {
-                System.out.println(usuarioEncontrado.toString());
-
-                usuarioEncontrado.setInteressesPessoais(interessesObtidos);
-                salvar(usuarioEncontrado);
-                return usuarioEncontrado;
-            }
-        }
-        return null;
-    }
-
-    public boolean deletarInteresses(UUID idUsuario, Integer idInteresse) {
+    public Usuario addInteresses(UUID idUsuario, List<InteressesPessoais> interesses) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
-        boolean interesseDeletado = false;
-        if (usuarioEncontrado != null) {
-            List<Interesses> interesses = usuarioEncontrado.getInteressesPessoais();
 
-            for (Interesses in : interesses) {
-                if (Objects.equals(in.getId(), idInteresse)) {
-                    interesses.remove(in);
-                    interesseDeletado = true;
+        if (usuarioEncontrado != null) {
+            for (InteressesPessoais interesse : interesses) {
+                usuarioEncontrado.getInteressesPessoais().add(interesse);
+            }
+            return salvar(usuarioEncontrado);
+        }
+        return null;
+    }
+
+    public Usuario atualizarInteresse(UUID idUsuario, InteressesPessoais interesse) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+
+        if (usuarioEncontrado != null) {
+            for (InteressesPessoais in : usuarioEncontrado.getInteressesPessoais()) {
+                if (in.getId().toString().toUpperCase(Locale.ROOT)
+                        .equals(interesse.getId().toString().toUpperCase(Locale.ROOT))) {
+
+                    usuarioEncontrado.getInteressesPessoais().remove(in);
+                    usuarioEncontrado.getInteressesPessoais().add(interesse);
                     break;
                 }
             }
-            usuarioRepository.save(usuarioEncontrado);
-
+            return salvar(usuarioEncontrado);
         }
-        return interesseDeletado;
+        return null;
     }
 
-    public List<Interesses> buscarTodosOsInteresses(UUID idUsuario) {
+    public Usuario deletarInteresse(UUID idUsuario, UUID idInteresse) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
+
         if (usuarioEncontrado != null) {
-            return usuarioEncontrado.getInteressesPessoais();
+            for (InteressesPessoais in : usuarioEncontrado.getInteressesPessoais()) {
+                if (Objects.equals(in.getId(), idInteresse)) {
+                    usuarioEncontrado.getInteressesPessoais().remove(in);
+                    return usuarioRepository.save(usuarioEncontrado);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Usuario deletarTodosInteresse(UUID idUsuario) throws InterruptedException {
+        final Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            usuario.getInteressesPessoais().clear();
+            usuarioRepository.save(usuario);
+            interessesRepository.deleteAll(usuario.getInteressesPessoais());
+            return usuario;
         }
         return null;
     }
@@ -235,7 +232,6 @@ public class UsuarioService {
         }
         return null;
     }
-
 }
 
 
