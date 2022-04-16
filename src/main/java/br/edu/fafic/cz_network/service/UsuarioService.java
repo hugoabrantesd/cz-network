@@ -50,7 +50,7 @@ public class UsuarioService {
             Usuario usuario = buscarPorId(UUID.fromString(id));
             if (usuario != null) {
                 usuarioRepository.delete(usuario);
-                return "Deletado com sucesso!";
+                return "";
             }
         } catch (IllegalArgumentException e) {
             return "Id inválido!";
@@ -82,7 +82,7 @@ public class UsuarioService {
         }
     }
 
-    public Usuario addInteresses(UUID idUsuario, List<InteressesPessoais> interesses) {
+    public Usuario criarInteresse(UUID idUsuario, List<InteressesPessoais> interesses) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
@@ -126,7 +126,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deletarTodosInteresse(UUID idUsuario) throws InterruptedException {
+    public Usuario deletarTodosInteresses(UUID idUsuario) throws InterruptedException {
         final Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
