@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -170,6 +169,19 @@ public class UsuarioController {
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
+    @PostMapping(value = "/endereco/adicionar/{idUsuario}")
+    public ResponseEntity<Object> adicionarEndereco(
+            @PathVariable UUID idUsuario, @RequestBody LinkedTreeMap<String, List<Endereco>> enderecos) {
+
+        Usuario usuarioComEnderecoAtualizado = usuarioService
+                .adicionarEndereco(enderecos.get("enderecos"), idUsuario);
+
+        if (usuarioComEnderecoAtualizado != null) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
     @PatchMapping(value = "/endereco/atualizar/{idUsuario}")
     public ResponseEntity<Object> atualizarEndereco(
             @PathVariable UUID idUsuario, @RequestBody Endereco endereco) {
@@ -177,6 +189,18 @@ public class UsuarioController {
         boolean enderecoAtualizado = usuarioService.atualizarEndereco(idUsuario, endereco);
 
         if (enderecoAtualizado) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @DeleteMapping(value = "/endereco/deletar/{idUsuario}/{idEndereco}")
+    public ResponseEntity<Object> deletarEndereco(
+            @PathVariable UUID idUsuario, @PathVariable UUID idEndereco) {
+
+        boolean enderecoDeletado = usuarioService.deletarEndereco(idUsuario, idEndereco);
+
+        if (enderecoDeletado) {
             return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
         }
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);

@@ -52,9 +52,9 @@ public class Usuario implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InteressesPessoais> interessesPessoais;
 
-    @Embedded
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = false)
-    private Endereco endereco;
+    private List<Endereco> enderecos;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

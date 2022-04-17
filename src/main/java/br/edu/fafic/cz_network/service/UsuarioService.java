@@ -181,13 +181,46 @@ public class UsuarioService {
         return null;
     }
 
+    public Usuario adicionarEndereco(List<Endereco> enderecos, UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            for (Endereco end : enderecos) {
+                usuario.getEnderecos().add(end);
+            }
+            return salvar(usuario);
+        }
+        return null;
+    }
+
     public boolean atualizarEndereco(UUID idUsuario, Endereco endereco) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
-            usuarioEncontrado.setEndereco(endereco);
-            salvar(usuarioEncontrado);
-            return true;
+
+            for (Endereco end : usuarioEncontrado.getEnderecos()) {
+                if (end.getId().toString().equals(endereco.getId().toString())) {
+                    usuarioEncontrado.getEnderecos().remove(end);
+                    usuarioEncontrado.getEnderecos().add(endereco);
+                    salvar(usuarioEncontrado);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean deletarEndereco(UUID idUsuario, UUID idEndereco) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+
+        if (usuarioEncontrado != null && usuarioEncontrado.getEnderecos().size() > 1) {
+            for (Endereco end : usuarioEncontrado.getEnderecos()) {
+                if (end.getId().toString().equals(idEndereco.toString())) {
+                    usuarioEncontrado.getEnderecos().remove(end);
+                    salvar(usuarioEncontrado);
+                    return true;
+                }
+            }
         }
         return false;
     }
