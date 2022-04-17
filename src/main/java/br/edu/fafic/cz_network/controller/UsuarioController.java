@@ -1,6 +1,7 @@
 package br.edu.fafic.cz_network.controller;
 
 import br.edu.fafic.cz_network.model.Educacao;
+import br.edu.fafic.cz_network.model.Endereco;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.service.UsuarioService;
@@ -164,6 +165,18 @@ public class UsuarioController {
         Usuario usuarioComEducacaoAtualizada = usuarioService.deletarTodaEducacao(idUsuario);
 
         if (usuarioComEducacaoAtualizada != null) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @PatchMapping(value = "/endereco/atualizar/{idUsuario}")
+    public ResponseEntity<Object> atualizarEndereco(
+            @PathVariable UUID idUsuario, @RequestBody Endereco endereco) {
+
+        boolean enderecoAtualizado = usuarioService.atualizarEndereco(idUsuario, endereco);
+
+        if (enderecoAtualizado) {
             return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body("");
         }
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);

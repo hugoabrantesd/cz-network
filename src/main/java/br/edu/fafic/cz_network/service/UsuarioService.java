@@ -1,6 +1,7 @@
 package br.edu.fafic.cz_network.service;
 
 import br.edu.fafic.cz_network.model.Educacao;
+import br.edu.fafic.cz_network.model.Endereco;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
@@ -179,6 +180,18 @@ public class UsuarioService {
         }
         return null;
     }
+
+    public boolean atualizarEndereco(UUID idUsuario, Endereco endereco) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+
+        if (usuarioEncontrado != null) {
+            usuarioEncontrado.setEndereco(endereco);
+            salvar(usuarioEncontrado);
+            return true;
+        }
+        return false;
+    }
+
 }
 
 
