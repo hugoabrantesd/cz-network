@@ -182,6 +182,26 @@ public class UsuarioController {
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
+    @GetMapping(value = "/endereco/buscar/{idEndereco}")
+    public ResponseEntity<Object> buscarEducacao(@PathVariable UUID idEndereco) {
+        Endereco enderecoEncontrado = usuarioService.buscarEndereco(idEndereco);
+
+        if (enderecoEncontrado != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(enderecoEncontrado);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @GetMapping(value = "/endereco/buscar-tudo/{idUsuario}")
+    public ResponseEntity<Object> buscarTodosEnderecos(@PathVariable UUID idUsuario) {
+        List<Endereco> enderecosEncontrados = usuarioService.buscarTodosEnderecos(idUsuario);
+
+        if (enderecosEncontrados != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(enderecosEncontrados);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
     @PatchMapping(value = "/endereco/atualizar/{idUsuario}")
     public ResponseEntity<Object> atualizarEndereco(
             @PathVariable UUID idUsuario, @RequestBody Endereco endereco) {

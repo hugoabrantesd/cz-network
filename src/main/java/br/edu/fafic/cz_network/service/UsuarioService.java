@@ -4,6 +4,7 @@ import br.edu.fafic.cz_network.model.Educacao;
 import br.edu.fafic.cz_network.model.Endereco;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
+import br.edu.fafic.cz_network.repository.EnderecoRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,11 @@ import java.util.*;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final EnderecoRepository enderecoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, EnderecoRepository enderecoRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.enderecoRepository = enderecoRepository;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -189,6 +192,20 @@ public class UsuarioService {
                 usuario.getEnderecos().add(end);
             }
             return salvar(usuario);
+        }
+        return null;
+    }
+
+    public Endereco buscarEndereco(UUID idEndereco) {
+        Optional<Endereco> endereco = enderecoRepository.findById(idEndereco);
+        return endereco.orElse(null);
+    }
+
+    public List<Endereco> buscarTodosEnderecos(UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            return usuario.getEnderecos();
         }
         return null;
     }
