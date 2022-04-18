@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -73,15 +72,27 @@ public class UsuarioController {
         return ResponseEntity.badRequest().body("[]");
     }
 
-    @PostMapping(value = "/interesses/criar/{idUsuario}")
-    public ResponseEntity<Object> addInteresses(
+    @PostMapping(value = "/interesses/adicionar/{idUsuario}")
+    public ResponseEntity<Object> adicionarInteresses(
             @RequestBody LinkedTreeMap<String, List<InteressesPessoais>> interesses,
             @PathVariable UUID idUsuario) {
 
         Usuario usuarioAtualizado = usuarioService
-                .criarInteresse(idUsuario, interesses.get("interessesPessoais"));
+                .adicionarInteresse(idUsuario, interesses.get("interessesPessoais"));
         if (usuarioAtualizado != null) {
             return ResponseEntity.status(CodigosHTTP.CREATED).body(usuarioAtualizado);
+        } else {
+            return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
+        }
+    }
+
+    @GetMapping(value = "/interesses/buscar/{idInteresse}")
+    public ResponseEntity<Object> buscarInteresses(
+            @PathVariable UUID idInteresse) {
+
+        InteressesPessoais interesseEncontrado = usuarioService.buscarInteressesPessoais(idInteresse);
+        if (interesseEncontrado != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(interesseEncontrado);
         } else {
             return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
         }
