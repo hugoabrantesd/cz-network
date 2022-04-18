@@ -3,6 +3,7 @@ package br.edu.fafic.cz_network.service;
 import br.edu.fafic.cz_network.model.Educacao;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
+import br.edu.fafic.cz_network.repository.EducacaoRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.*;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final EducacaoRepository educacaoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, EducacaoRepository educacaoRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.educacaoRepository = educacaoRepository;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -134,6 +137,20 @@ public class UsuarioService {
                 usuario.getEducacao().add(educacao);
             }
             return usuarioRepository.save(usuario);
+        }
+        return null;
+    }
+
+    public Educacao buscarEducacao(UUID idEducacao) {
+        Optional<Educacao> educacao = educacaoRepository.findById(idEducacao);
+        return educacao.orElse(null);
+    }
+
+    public List<Educacao> buscarTodaEducacao(UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            return usuario.getEducacao();
         }
         return null;
     }
