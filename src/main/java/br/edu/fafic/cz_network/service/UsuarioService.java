@@ -93,6 +93,15 @@ public class UsuarioService {
         return interessesPessoais.orElse(null);
     }
 
+    public List<InteressesPessoais> buscarTodosInteressesPessoais(UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            return usuario.getInteressesPessoais();
+        }
+        return null;
+    }
+
     public Usuario atualizarInteresse(UUID idUsuario, InteressesPessoais interesse) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 

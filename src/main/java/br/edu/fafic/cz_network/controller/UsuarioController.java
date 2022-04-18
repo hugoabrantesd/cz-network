@@ -87,12 +87,22 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/interesses/buscar/{idInteresse}")
-    public ResponseEntity<Object> buscarInteresses(
-            @PathVariable UUID idInteresse) {
+    public ResponseEntity<Object> buscarInteresses(@PathVariable UUID idInteresse) {
 
         InteressesPessoais interesseEncontrado = usuarioService.buscarInteressesPessoais(idInteresse);
         if (interesseEncontrado != null) {
             return ResponseEntity.status(CodigosHTTP.OK).body(interesseEncontrado);
+        } else {
+            return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
+        }
+    }
+
+    @GetMapping(value = "/interesses/buscar-todos/{idUsuario}")
+    public ResponseEntity<Object> buscarTodosInteresses(@PathVariable UUID idUsuario) {
+
+        List<InteressesPessoais> interessesEncontrados = usuarioService.buscarTodosInteressesPessoais(idUsuario);
+        if (interessesEncontrados != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(interessesEncontrados);
         } else {
             return ResponseEntity.badRequest().body(MENSAGEM_ERRO);
         }
