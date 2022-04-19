@@ -1,10 +1,12 @@
 package br.edu.fafic.cz_network.service;
 
 import br.edu.fafic.cz_network.model.Educacao;
+import br.edu.fafic.cz_network.model.Endereco;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
-import br.edu.fafic.cz_network.repository.InteressesRepository;
 import br.edu.fafic.cz_network.repository.EducacaoRepository;
+import br.edu.fafic.cz_network.repository.EnderecoRepository;
+import br.edu.fafic.cz_network.repository.InteressesRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +20,17 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final InteressesRepository interessesRepository;
     private final EducacaoRepository educacaoRepository;
+    private final EnderecoRepository enderecoRepository;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           InteressesRepository interessesRepository,
-                          EducacaoRepository educacaoRepository) {
+                          EducacaoRepository educacaoRepository,
+                          EnderecoRepository enderecoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.interessesRepository = interessesRepository;
         this.educacaoRepository = educacaoRepository;
+        this.enderecoRepository = enderecoRepository;
     }
-
 
     public Usuario salvar(Usuario usuario) {
 
@@ -216,6 +220,65 @@ public class UsuarioService {
         }
         return null;
     }
+
+    public Usuario adicionarEndereco(List<Endereco> enderecos, UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            for (Endereco end : enderecos) {
+                usuario.getEnderecos().add(end);
+            }
+            return salvar(usuario);
+        }
+        return null;
+    }
+
+    public Endereco buscarEndereco(UUID idEndereco) {
+        Optional<Endereco> endereco = enderecoRepository.findById(idEndereco);
+        return endereco.orElse(null);
+    }
+
+    public List<Endereco> buscarTodosEnderecos(UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            return usuario.getEnderecos();
+        }
+        return null;
+    }
+
+    public boolean atualizarEndereco(UUID idUsuario, Endereco endereco) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+
+        if (usuarioEncontrado != null) {
+
+            for (Endereco end : usuarioEncontrado.getEnderecos()) {
+                if (end.getId().toString().equals(endereco.getId().toString())) {
+                    usuarioEncontrado.getEnderecos().remove(end);
+                    usuarioEncontrado.getEnderecos().add(endereco);
+                    salvar(usuarioEncontrado);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean deletarEndereco(UUID idUsuario, UUID idEndereco) {
+        Usuario usuarioEncontrado = buscarPorId(idUsuario);
+
+        if (usuarioEncontrado != null && usuarioEncontrado.getEnderecos().size() > 1) {
+            for (Endereco end : usuarioEncontrado.getEnderecos()) {
+                if (end.getId().toString().equals(idEndereco.toString())) {
+                    usuarioEncontrado.getEnderecos().remove(end);
+                    salvar(usuarioEncontrado);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
 
 
