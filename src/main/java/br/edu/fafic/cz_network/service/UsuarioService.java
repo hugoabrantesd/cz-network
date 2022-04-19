@@ -3,6 +3,7 @@ package br.edu.fafic.cz_network.service;
 import br.edu.fafic.cz_network.model.Educacao;
 import br.edu.fafic.cz_network.model.InteressesPessoais;
 import br.edu.fafic.cz_network.model.Usuario;
+import br.edu.fafic.cz_network.repository.InteressesRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.*;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final InteressesRepository interessesRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, InteressesRepository interessesRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.interessesRepository = interessesRepository;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -73,7 +76,7 @@ public class UsuarioService {
         }
     }
 
-    public Usuario criarInteresse(UUID idUsuario, List<InteressesPessoais> interesses) {
+    public Usuario adicionarInteresse(UUID idUsuario, List<InteressesPessoais> interesses) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
@@ -81,6 +84,20 @@ public class UsuarioService {
                 usuarioEncontrado.getInteressesPessoais().add(interesse);
             }
             return salvar(usuarioEncontrado);
+        }
+        return null;
+    }
+
+    public InteressesPessoais buscarInteressesPessoais(UUID idInteresse) {
+        Optional<InteressesPessoais> interessesPessoais = interessesRepository.findById(idInteresse);
+        return interessesPessoais.orElse(null);
+    }
+
+    public List<InteressesPessoais> buscarTodosInteressesPessoais(UUID idUsuario) {
+        Usuario usuario = buscarPorId(idUsuario);
+
+        if (usuario != null) {
+            return usuario.getInteressesPessoais();
         }
         return null;
     }
