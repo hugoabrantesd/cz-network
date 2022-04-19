@@ -155,6 +155,26 @@ public class UsuarioController {
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
+    @GetMapping(value = "/educacao/buscar/{idEducacao}")
+    public ResponseEntity<Object> buscarEducacao(@PathVariable UUID idEducacao) {
+        Educacao educacao = usuarioService.buscarEducacao(idEducacao);
+
+        if (educacao != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(educacao);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @GetMapping(value = "/educacao/buscar-tudo/{idUsuario}")
+    public ResponseEntity<Object> buscarTodaEducacao(@PathVariable UUID idUsuario) {
+        List<Educacao> educacaoList = usuarioService.buscarTodaEducacao(idUsuario);
+
+        if (educacaoList != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(educacaoList);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
     @PatchMapping(value = "/educacao/atualizar/{idUsuario}")
     public ResponseEntity<Object> atualizarEducacao(
             @PathVariable UUID idUsuario, @RequestBody Educacao educacao) {
