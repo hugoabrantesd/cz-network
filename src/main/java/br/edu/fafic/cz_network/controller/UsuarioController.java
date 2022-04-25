@@ -225,7 +225,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/endereco/buscar/{idEndereco}")
-    public ResponseEntity<Object> buscarEducacao(@PathVariable UUID idEndereco) {
+    public ResponseEntity<Object> buscarEndereco(@PathVariable UUID idEndereco) {
         Endereco enderecoEncontrado = usuarioService.buscarEndereco(idEndereco);
 
         if (enderecoEncontrado != null) {
