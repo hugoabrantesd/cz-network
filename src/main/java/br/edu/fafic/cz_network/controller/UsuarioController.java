@@ -1,9 +1,6 @@
 package br.edu.fafic.cz_network.controller;
 
-import br.edu.fafic.cz_network.model.Educacao;
-import br.edu.fafic.cz_network.model.Endereco;
-import br.edu.fafic.cz_network.model.InteressesPessoais;
-import br.edu.fafic.cz_network.model.Usuario;
+import br.edu.fafic.cz_network.model.*;
 import br.edu.fafic.cz_network.service.UsuarioService;
 import br.edu.fafic.cz_network.utils.CodigosHTTP;
 import com.google.gson.internal.LinkedTreeMap;
@@ -11,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -135,7 +133,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping(value = "/interesses/deletar-todos/{idUsuario}")
-    public ResponseEntity<Object> deletarTodosInteresse(@PathVariable UUID idUsuario) throws InterruptedException {
+    public ResponseEntity<Object> deletarTodosInteresse(@PathVariable UUID idUsuario) {
 
         Usuario usuarioAtualizado = usuarioService.deletarTodosInteresses(idUsuario);
         if (usuarioAtualizado != null) {
@@ -267,6 +265,53 @@ public class UsuarioController {
         }
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
+
+    @PostMapping(value = "/notificacao/gerar")
+    public ResponseEntity<Object> gerarNotificacao(@RequestBody Notificacao notificacao) {
+
+        Notificacao notificacaoGerada = usuarioService
+                .gerarNotificacao(notificacao);
+
+        if (notificacaoGerada != null) {
+            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body(notificacaoGerada);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @GetMapping(value = "/notificacao/retornar-todas/{idUsuario}")
+    public ResponseEntity<Object> retornarNotificacoes(@PathVariable UUID idUsuario) {
+        List<Notificacao> notificacoesEncontradas = usuarioService.retornarNotificacoes(idUsuario);
+
+        if (notificacoesEncontradas != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(notificacoesEncontradas);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @PatchMapping(value = "/notificacao/atualizar")
+    public ResponseEntity<Object> atualizarNotificacao(@RequestBody Notificacao notificacao) {
+
+        boolean notificacaoAtualizada = usuarioService.atualizarOuDeletarNotificacao(
+                Optional.ofNullable(notificacao), true);
+
+        if (notificacaoAtualizada) {
+            return ResponseEntity.status(CodigosHTTP.OK).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @DeleteMapping(value = "/notificacao/deletar")
+    public ResponseEntity<Object> deletarNotificacao(@RequestBody Notificacao notificacao) {
+
+        boolean notificacaoDeletada = usuarioService.atualizarOuDeletarNotificacao(
+                Optional.ofNullable(notificacao), false);
+
+        if (notificacaoDeletada) {
+            return ResponseEntity.status(CodigosHTTP.OK).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
 
 }
 

@@ -62,8 +62,8 @@ public class Usuario implements Serializable {
 
     private String visibilidadeDoPerfil;
 
-    @ElementCollection
-    private List<String> notificacoes;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Notificacao> notificacoes;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate contaCriadaEm;
