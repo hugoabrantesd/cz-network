@@ -1,13 +1,7 @@
 package br.edu.fafic.cz_network.service;
 
-import br.edu.fafic.cz_network.model.Educacao;
-import br.edu.fafic.cz_network.model.Endereco;
-import br.edu.fafic.cz_network.model.InteressesPessoais;
-import br.edu.fafic.cz_network.model.Usuario;
-import br.edu.fafic.cz_network.repository.EducacaoRepository;
-import br.edu.fafic.cz_network.repository.EnderecoRepository;
-import br.edu.fafic.cz_network.repository.InteressesRepository;
-import br.edu.fafic.cz_network.repository.UsuarioRepository;
+import br.edu.fafic.cz_network.model.*;
+import br.edu.fafic.cz_network.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,15 +15,21 @@ public class UsuarioService {
     private final InteressesRepository interessesRepository;
     private final EducacaoRepository educacaoRepository;
     private final EnderecoRepository enderecoRepository;
+    private final NotificacaoRepository notificacaoRepository;
+
+    private final PostagemService postagemService;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           InteressesRepository interessesRepository,
                           EducacaoRepository educacaoRepository,
-                          EnderecoRepository enderecoRepository) {
+                          EnderecoRepository enderecoRepository,
+                          NotificacaoRepository notificacaoRepository, PostagemService postagemService) {
         this.usuarioRepository = usuarioRepository;
         this.interessesRepository = interessesRepository;
         this.educacaoRepository = educacaoRepository;
         this.enderecoRepository = enderecoRepository;
+        this.notificacaoRepository = notificacaoRepository;
+        this.postagemService = postagemService;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -274,6 +274,61 @@ public class UsuarioService {
                     salvar(usuarioEncontrado);
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public Notificacao gerarNotificacao(Notificacao notificacao) {
+
+        UUID idAutor = notificacao.getIdUsuarioAutor();
+        UUID idReceptor = notificacao.getIdUsuarioReceptor();
+        UUID idPostagem = notificacao.getIdPostagemAcionada();
+
+        Usuario autorEncontrado = buscarPorId(idAutor);
+        Usuario receptorEncontrado = buscarPorId(idReceptor);
+        Postagem postagemEncontrada = postagemService.findById(idPostagem);
+
+        if (autorEncontrado != null && receptorEncontrado != null && postagemEncontrada != null) {
+            notificacao.setDataHoraNotificacao(LocalDate.now());
+            autorEncontrado.getNotificacoes().add(notificacao);
+            receptorEncontrado.getNotificacoes().add(notificacao);
+
+            return notificacaoRepository.save(notificacao);
+        }
+        return null;
+    }
+
+    public List<Notificacao> retornarNotificacoes(UUID idUsuario) {
+        final Usuario usuario = buscarPorId(idUsuario);
+        if (usuario != null) {
+            return usuario.getNotificacoes();
+        }
+        return null;
+    }
+
+    public boolean atualizarOuDeletarNotificacao(Optional<Notificacao> novaNotificacao, boolean atualizarNotificacao) {
+
+        List<Notificacao> notificacoesExistentes = notificacaoRepository.findAll();
+
+        for (Notificacao notificacao : notificacoesExistentes) {
+            if (novaNotificacao.isPresent() &&
+                    notificacao.getId().toString().equals(novaNotificacao.get().getId().toString())) {
+
+                notificacaoRepository.delete(notificacao);
+
+                if (atualizarNotificacao) {
+                    notificacaoRepository.save(novaNotificacao.get());
+                } else {
+                    final Usuario usuarioAutor = buscarPorId(notificacao.getIdUsuarioAutor());
+                    final Usuario usuarioReceptor = buscarPorId(notificacao.getIdUsuarioReceptor());
+
+                    usuarioAutor.getNotificacoes().remove(notificacao);
+                    usuarioReceptor.getNotificacoes().remove(notificacao);
+                    salvar(usuarioAutor);
+                    salvar(usuarioReceptor);
+                }
+                return true;
             }
         }
         return false;
