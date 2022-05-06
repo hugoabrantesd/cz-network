@@ -3,10 +3,12 @@ package br.edu.fafic.cz_network.controller;
 import br.edu.fafic.cz_network.model.*;
 import br.edu.fafic.cz_network.service.UsuarioService;
 import br.edu.fafic.cz_network.utils.CodigosHTTP;
+import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -273,7 +275,7 @@ public class UsuarioController {
                 .gerarNotificacao(notificacao);
 
         if (notificacaoGerada != null) {
-            return ResponseEntity.status(CodigosHTTP.NO_CONTENT).body(notificacaoGerada);
+            return ResponseEntity.status(CodigosHTTP.CREATED).body(notificacaoGerada);
         }
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
@@ -312,6 +314,35 @@ public class UsuarioController {
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
+    @GetMapping(value = "/notificacao/acao/buscar/{idNotificacao}")
+    public ResponseEntity<Object> retornarAcaoNotificacao(@PathVariable UUID idNotificacao) {
+        Acao acaoEncontrada = usuarioService.retornarAcaoNotificacao(idNotificacao);
+
+        if (acaoEncontrada != null) {
+            return ResponseEntity.status(CodigosHTTP.OK).body(acaoEncontrada);
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @PatchMapping(value = "/notificacao/acao/atualizar")
+    public ResponseEntity<Object> atualizarAcaoNotificacao(
+            @RequestBody String dados) {
+
+        HashMap<String, Object> json = new Gson().fromJson(dados, HashMap.class);
+        LinkedTreeMap<String, String> data = (LinkedTreeMap) json.get("acao");
+
+        UUID idNotificacao = UUID.fromString(String.valueOf(json.get("idNotificacao")));
+        String nomeAcao = data.get("nomeAcao");
+
+        Acao acao = Acao.builder().nomeAcao(nomeAcao).build();
+
+        boolean acaoAtualizada = usuarioService.atualizarAcaoNotificacao(idNotificacao, acao);
+
+        if (acaoAtualizada) {
+            return ResponseEntity.status(CodigosHTTP.OK).body("");
+        }
+        return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
 
 }
 

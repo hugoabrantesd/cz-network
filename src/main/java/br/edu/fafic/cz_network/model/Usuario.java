@@ -23,6 +23,8 @@ public class Usuario implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    private String nomeCompleto;
+
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     @Column(nullable = false)
     private LocalDate dataAniversario;
@@ -62,7 +64,7 @@ public class Usuario implements Serializable {
 
     private String visibilidadeDoPerfil;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notificacao> notificacoes;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
