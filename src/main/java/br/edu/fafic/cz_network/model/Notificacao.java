@@ -24,8 +24,8 @@ public class Notificacao {
 
     private UUID idUsuarioReceptor;
 
-    @JoinColumn(nullable = false)
-    private String acao; // todo: mudar para tipo Acao
+    @Embedded
+    private Acao acao;
 
     private UUID idPostagemAcionada;
 

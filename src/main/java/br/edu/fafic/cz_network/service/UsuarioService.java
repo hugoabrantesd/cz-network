@@ -281,6 +281,8 @@ public class UsuarioService {
 
     public Notificacao gerarNotificacao(Notificacao notificacao) {
 
+        //System.out.println(notificacao.getAcao().getNome());
+
         UUID idAutor = notificacao.getIdUsuarioAutor();
         UUID idReceptor = notificacao.getIdUsuarioReceptor();
         UUID idPostagem = notificacao.getIdPostagemAcionada();
@@ -315,21 +317,44 @@ public class UsuarioService {
             if (novaNotificacao.isPresent() &&
                     notificacao.getId().toString().equals(novaNotificacao.get().getId().toString())) {
 
+                final Usuario usuarioAutor = buscarPorId(notificacao.getIdUsuarioAutor());
+                final Usuario usuarioReceptor = buscarPorId(notificacao.getIdUsuarioReceptor());
+
+                usuarioAutor.getNotificacoes().remove(notificacao);
+                usuarioReceptor.getNotificacoes().remove(notificacao);
+
                 notificacaoRepository.delete(notificacao);
 
                 if (atualizarNotificacao) {
                     notificacaoRepository.save(novaNotificacao.get());
                 } else {
-                    final Usuario usuarioAutor = buscarPorId(notificacao.getIdUsuarioAutor());
-                    final Usuario usuarioReceptor = buscarPorId(notificacao.getIdUsuarioReceptor());
-
-                    usuarioAutor.getNotificacoes().remove(notificacao);
-                    usuarioReceptor.getNotificacoes().remove(notificacao);
                     salvar(usuarioAutor);
                     salvar(usuarioReceptor);
                 }
                 return true;
             }
+        }
+        return false;
+    }
+
+    public Acao retornarAcaoNotificacao(UUID idNotificacao) {
+        final Optional<Notificacao> notificacaoSelecionada = notificacaoRepository.findById(idNotificacao);
+
+        if (notificacaoSelecionada.isPresent()) {
+            final Notificacao notificacao = notificacaoSelecionada.get();
+            return notificacao.getAcao();
+        }
+        return null;
+    }
+
+    public boolean atualizarAcaoNotificacao(UUID idNotificacao, Acao acao) {
+        final Optional<Notificacao> notificacaoSelecionada = notificacaoRepository.findById(idNotificacao);
+
+        if (notificacaoSelecionada.isPresent() && acao != null && !acao.getNomeAcao().isEmpty()) {
+            final Notificacao notificacao = notificacaoSelecionada.get();
+            notificacao.setAcao(acao);
+            notificacaoRepository.save(notificacao);
+            return true;
         }
         return false;
     }
