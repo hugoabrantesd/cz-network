@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -24,6 +21,7 @@ public class Comentario {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String texto;
-   // private String usuario; TODO: MUDAR PARA O TIPO "Usuario"
+    @ManyToOne
+    private Usuario usuario;
     private LocalDateTime dataHoraComentario;
 }

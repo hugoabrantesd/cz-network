@@ -1,7 +1,9 @@
 package br.edu.fafic.cz_network.controller;
 
 
+import br.edu.fafic.cz_network.model.Categoria;
 import br.edu.fafic.cz_network.model.Pagina;
+
 import br.edu.fafic.cz_network.service.PaginaServiceIMP;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +16,15 @@ import java.util.UUID;
 public class PaginaControler {
 
     private final PaginaServiceIMP paginaServiceIMP;
+   // private final CategoriaServiceIMP categoriaServiceIMP;
 
     public PaginaControler(PaginaServiceIMP paginaServiceIMP) {
         this.paginaServiceIMP = paginaServiceIMP;
+        //this.categoriaServiceIMP = categoriaServiceIMP;
     }
     @PostMapping("/save")
-    public ResponseEntity save(@RequestBody Pagina pagina){
-        return ResponseEntity.ok().body(paginaServiceIMP.save(pagina));
+    public ResponseEntity save(@RequestBody Pagina pagina, Categoria categoria){
+        return ResponseEntity.ok().body(paginaServiceIMP.save(pagina,categoria));
     }
     @DeleteMapping("/delete")
     public ResponseEntity delete(@RequestBody Pagina pagina){
@@ -39,5 +43,19 @@ public class PaginaControler {
     public ResponseEntity all(){
         return ResponseEntity.ok().body(paginaServiceIMP.listar());
     }
+//    @PostMapping("/categoria/save")
+//    public ResponseEntity save(@RequestBody Categoria categoria){
+//        return ResponseEntity.ok().body(categoriaServiceIMP.save(categoria));
+//    }
+//    @PatchMapping("/categoria/update")
+//    public ResponseEntity update(@RequestBody Categoria categoria){
+//        return ResponseEntity.ok().body(categoriaServiceIMP.update(categoria));
+//    }
+    @DeleteMapping("/categoria/deletar")
+    public ResponseEntity deletar(@RequestBody String idPagina){
+        paginaServiceIMP.deletarCategoria(UUID.fromString(idPagina));
+        return ResponseEntity.ok().body(" ");
+    }
+
 
 }

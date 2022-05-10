@@ -31,7 +31,7 @@ public class Pagina {
     private String usuario;
     private String visibilidade;
     private LocalDateTime dataHoraCriacao;
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private Categoria categoria;
 
 
