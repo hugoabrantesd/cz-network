@@ -11,7 +11,7 @@ import java.util.UUID;
 
 
 @Service
-public class PostagemServiceIMP implements PostagemService{
+public class PostagemServiceIMP implements PostagemService {
 
     @Autowired
     PostagemRepository postagemRepository;
@@ -31,7 +31,7 @@ public class PostagemServiceIMP implements PostagemService{
     @Override
     public Postagem update(Postagem postagem) {
         Postagem postagemUpdate = findById(postagem.getId());
-        if(postagemUpdate != null){
+        if (postagemUpdate != null) {
             postagemUpdate = postagem;
             postagemRepository.save(postagemUpdate);
         }

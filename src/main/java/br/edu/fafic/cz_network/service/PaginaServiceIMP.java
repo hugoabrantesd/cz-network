@@ -1,5 +1,6 @@
 package br.edu.fafic.cz_network.service;
 
+import br.edu.fafic.cz_network.model.Categoria;
 import br.edu.fafic.cz_network.model.Pagina;
 import br.edu.fafic.cz_network.repository.PaginaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class PaginaServiceIMP implements PaginaService {
     PaginaRepository paginaRepository;
 
     @Override
-    public Pagina save(Pagina pagina) {
+    public Pagina save(Pagina pagina, Categoria categoria) {
         return paginaRepository.save(pagina);
     }
 
@@ -46,5 +47,16 @@ public class PaginaServiceIMP implements PaginaService {
     @Override
     public List<Pagina> listar() {
         return paginaRepository.findAll();
+    }
+
+    @Override
+    public Pagina deletarCategoria(UUID idPagina) {
+        Pagina pagina = findById(idPagina);
+        if(pagina != null){
+            pagina.setCategoria(null);
+            paginaRepository.save(pagina);
+        }
+        return pagina;
+
     }
 }
