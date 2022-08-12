@@ -1,5 +1,5 @@
 FROM adoptopenjdk/openjdk11:latest
-FROM maven:3-jdk-8-alpine
+FROM maven:3-openjdk11:latest
 
 ENV HOST_IP localhost
 ENV DATABASE_USER postgres
