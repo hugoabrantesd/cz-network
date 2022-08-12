@@ -16,8 +16,10 @@ node {
           }
 
           stage('Deploy docker'){
+                  sh "mvn clean"
+                  sh "mvn install -D HOST_IP=localhost -D DATABASE_USER=postgres -D DATABASE_PASSWORD=13111992"
                   echo "Docker Image Tag Name: ${dockerImageTag}"
-                  sh "apt-get install maven"
+//                   sh "apt-get install maven"
 
                   sh "export HOST_IP=localhost"
                   sh "export DATABASE_USER=postgres"

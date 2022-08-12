@@ -6,8 +6,8 @@ ENV DATABASE_PASSWORD 13111992
 
 WORKDIR /app
 
-RUN mvn clean
-RUN mvn install -D $HOST_IP -D $DATABASE_USER -D $DATABASE_PASSWORD
+#RUN mvn clean
+#RUN mvn install -D $HOST_IP -D $DATABASE_USER -D $DATABASE_PASSWORD
 
 FROM adoptopenjdk/openjdk11:latest
 COPY --from=build /app/target/*.jar app.jar
