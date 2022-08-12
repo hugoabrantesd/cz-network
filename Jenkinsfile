@@ -1,5 +1,5 @@
 node {
-    def WORKSPACE = "/var/lib/jenkins/workspace/cz_network-deploy"
+    def WORKSPACE = "/app"
     def dockerImageTag = "cz_network-deploy${env.BUILD_NUMBER}"
 
     try{

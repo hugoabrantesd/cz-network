@@ -1,5 +1,5 @@
 FROM adoptopenjdk/openjdk11:latest
-#WORKDIR /app
+WORKDIR /app
 RUN mvn clean install
 
 ARG JAR_FILE=target/*.jar
