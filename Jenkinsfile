@@ -1,5 +1,5 @@
 node {
-    def WORKSPACE = "/app"
+    def WORKSPACE = "./"
     def dockerImageTag = "cz_network-deploy${env.BUILD_NUMBER}"
 
     try{
