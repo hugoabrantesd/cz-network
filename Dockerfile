@@ -1,16 +1,12 @@
-# Docker Build Stage
-FROM maven:3-jdk-8-alpine AS build
-
-WORKDIR /opt/app
-
-#ARG JAR_FILE=target/*.jar
-COPY ./ /opt/app
-RUN mvn clean install
-
 FROM adoptopenjdk/openjdk11:latest
+FROM maven:3-jdk-8-alpine
 
-COPY --from=build /opt/app/target/*.jar app.jar
+WORKDIR /app
+
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
 
 EXPOSE 8080
 
+ENTRYPOINT ["mvn", "clean", "install"]
 ENTRYPOINT ["java", "-jar", "app.jar"]
