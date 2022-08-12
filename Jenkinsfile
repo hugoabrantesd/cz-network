@@ -3,7 +3,7 @@ node {
     def dockerImageTag = "cz_network-deploy${env.BUILD_NUMBER}"
 
     try{
-//          notifyBuild('STARTED')
+//           notifyBuild('STARTED')
          stage('Clone Repo') {
             // for display purposes
             // Get some code from a GitHub repository
