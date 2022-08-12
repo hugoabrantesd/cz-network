@@ -18,6 +18,11 @@ node {
           stage('Deploy docker'){
                   echo "Docker Image Tag Name: ${dockerImageTag}"
                   sh "apt-get install maven"
+
+                  sh "export HOST_IP=localhost"
+                  sh "export DATABASE_USER=postgres"
+                  sh "export DATABASE_PASSWORD=13111992"
+
                   sh "docker stop cz_network-deploy || true && docker rm cz_network-deploy || true"
                   sh "docker run --name cz_network-deploy -d -p 8081:8080 cz_network-deploy:${env.BUILD_NUMBER}"
           }
