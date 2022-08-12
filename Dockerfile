@@ -14,4 +14,4 @@ COPY ${JAR_FILE} app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","-Xmx1024M","-D HOST_IP=${HOST_IP} -D DATABASE_USER=${DATABASE_USER} -D DATABASE_PASSWORD=${DATABASE_PASSWORD}","app.jar"]
