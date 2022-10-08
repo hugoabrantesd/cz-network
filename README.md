@@ -32,7 +32,7 @@ Tecnologias utilizadas:
 - JPA
 - Hibernate
 
-# Autor
+# Autores
 
 #### Hugo Abrantes de Lira
 #### Taylson Leite
