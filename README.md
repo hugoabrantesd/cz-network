@@ -6,7 +6,7 @@ O objetivo principal do sistema é fornecer uma API Rest para um sistema front-e
 Para isso, também foi desenvolvida a aplicação front-end, disponível em: https://github.com/hugoabrantesd/cz-network-front.git
 
 Diagrama de classes:
-!(https://github.com/hugoabrantesd/cz-network/blob/main/Cajazeiras%20Network.png)
+(https://github.com/hugoabrantesd/cz-network/blob/main/Cajazeiras%20Network.png)
 
 Requisitos funcionais:
 - CRUD de usuário;
