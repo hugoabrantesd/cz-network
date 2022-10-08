@@ -1,4 +1,4 @@
-# Cz Network
+# Cz Network - Backend
 
 ## Sobre o projeto
 O Cz Network é um projeto backend acadêmico de uma rede social desenvolvido em Java. 
