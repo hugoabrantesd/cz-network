@@ -5,8 +5,8 @@ O Cz Network é um projeto backend acadêmico de uma rede social desenvolvido em
 O objetivo principal do sistema é fornecer uma Rest API para uma aplicação front-end.
 Para isso, também foi desenvolvida a aplicação front-end, disponível em: https://github.com/hugoabrantesd/cz-network-front
 
-Diagrama de classes: 
-![Diagrama] (https://github.com/hugoabrantesd/cz-network/blob/main/Cajazeiras%20Network.png) ![Diagrama]
+### Diagrama de classes
+![Diagrama](https://user-images.githubusercontent.com/75028196/194678794-1be44941-ed02-4d15-b509-e12ae608ccb9.png)
 
 Requisitos funcionais:
 - CRUD de usuário;
