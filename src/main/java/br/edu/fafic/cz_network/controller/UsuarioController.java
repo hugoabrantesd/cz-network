@@ -1,5 +1,6 @@
 package br.edu.fafic.cz_network.controller;
 
+import br.edu.fafic.cz_network.dto.UsuarioLoginDto;
 import br.edu.fafic.cz_network.model.*;
 import br.edu.fafic.cz_network.service.UsuarioService;
 import br.edu.fafic.cz_network.utils.CodigosHTTP;
@@ -32,6 +33,11 @@ public class UsuarioController {
             return ResponseEntity.status(CodigosHTTP.CREATED).body(usuario);
         }
         return ResponseEntity.badRequest().body("[]");
+    }
+
+    @PostMapping(value = "/login")
+    public Boolean login(@RequestBody UsuarioLoginDto usuario) {
+        return usuarioService.login(usuario);
     }
 
     @DeleteMapping(value = "/deletar/{id}")

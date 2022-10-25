@@ -1,5 +1,6 @@
 package br.edu.fafic.cz_network.service;
 
+import br.edu.fafic.cz_network.dto.UsuarioLoginDto;
 import br.edu.fafic.cz_network.model.*;
 import br.edu.fafic.cz_network.repository.*;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,12 @@ public class UsuarioService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Boolean login(UsuarioLoginDto usuario) {
+        final Optional<Usuario> us = usuarioRepository.findByEmail(usuario.getEmail());
+
+        return us.isPresent();
     }
 
     public String deletar(String id) {
