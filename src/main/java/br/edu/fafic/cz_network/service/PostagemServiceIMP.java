@@ -1,10 +1,13 @@
 package br.edu.fafic.cz_network.service;
 
 import br.edu.fafic.cz_network.model.Postagem;
+import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.repository.PostagemRepository;
+import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,12 +16,29 @@ import java.util.UUID;
 @Service
 public class PostagemServiceIMP implements PostagemService {
 
-    @Autowired
+    final
     PostagemRepository postagemRepository;
 
+    private final UsuarioRepository usuarioRepository;
+
+    public PostagemServiceIMP(PostagemRepository postagemRepository, UsuarioRepository usuarioRepository) {
+        this.postagemRepository = postagemRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
+
     @Override
-    public Postagem save(Postagem postagem) {
-        return postagemRepository.save(postagem);
+    public Postagem save(Postagem postagem, UUID idUsuario) {
+        final Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+
+        if (usuario.isPresent()) {
+            Usuario usuarioEncontrado = usuario.get();
+            usuarioEncontrado.getPostagens().add(postagem);
+//            usuarioRepository.save(usuarioEncontrado);
+
+            return postagemRepository.save(postagem);
+        }
+
+        return null;
     }
 
     @Override

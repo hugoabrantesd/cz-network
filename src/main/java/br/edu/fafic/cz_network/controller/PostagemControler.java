@@ -19,9 +19,9 @@ public class PostagemControler {
     public PostagemControler(PostagemServiceIMP postagemServiceIMP) {
         this.postagemServiceIMP = postagemServiceIMP;
     }
-    @PostMapping("/save")
-    public ResponseEntity save(@RequestBody Postagem postagem){
-        return ResponseEntity.ok().body(postagemServiceIMP.save(postagem));
+    @PostMapping("/save/{id-usuario}")
+    public ResponseEntity save(@RequestBody Postagem postagem, @PathVariable(value = "id-usuario") UUID idUsuario){
+        return ResponseEntity.ok().body(postagemServiceIMP.save(postagem, idUsuario));
     }
 
     @DeleteMapping("/delete")

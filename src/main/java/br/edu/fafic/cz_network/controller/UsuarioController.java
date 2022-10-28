@@ -6,13 +6,23 @@ import br.edu.fafic.cz_network.service.UsuarioService;
 import br.edu.fafic.cz_network.utils.CodigosHTTP;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import javax.servlet.http.HttpServlet;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/usuario")
@@ -36,7 +46,7 @@ public class UsuarioController {
     }
 
     @PostMapping(value = "/login")
-    public Boolean login(@RequestBody UsuarioLoginDto usuario) {
+    public Usuario login(@RequestBody UsuarioLoginDto usuario) {
         return usuarioService.login(usuario);
     }
 
@@ -348,6 +358,39 @@ public class UsuarioController {
             return ResponseEntity.status(CodigosHTTP.OK).body("");
         }
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
+    }
+
+    @GetMapping(value = "/{nome_img}")
+    public ResponseEntity<Object> getImage(@PathVariable String nome_img) throws IOException {
+
+        var contentType = MediaType.IMAGE_JPEG;
+
+        var filePath = "C:\\DEVELOP\\JAVA_PROJECTS\\cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\controller\\" + nome_img + ".jpg";
+
+        final File file = new File(filePath);
+
+        if (file.exists()) {
+            Path path = Paths.get(filePath);
+            final byte[] imageBytes = Files.readAllBytes(path);
+
+            if (imageBytes.length > 0) {
+                final ByteArrayResource inputStream = new ByteArrayResource(imageBytes);
+
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .contentLength(inputStream.contentLength())
+                        .contentType(contentType)
+                        .body(inputStream);
+            }
+        }
+        System.out.println("NÃO EXISTE");
+        contentType = MediaType.APPLICATION_JSON;
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(contentType)
+                .body(new Gson().toJson("Imagem não encontrada!"));
+
     }
 
 }

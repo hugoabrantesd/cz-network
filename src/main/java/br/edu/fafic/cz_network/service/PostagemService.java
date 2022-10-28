@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface PostagemService{
 
-    Postagem save(Postagem postagem);
+    Postagem save(Postagem postagem, UUID idUsuario);
     Postagem delete(Postagem postagem);
     Postagem update(Postagem postagem);
     Postagem findById(UUID id);

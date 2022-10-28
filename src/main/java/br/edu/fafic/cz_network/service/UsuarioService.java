@@ -50,10 +50,15 @@ public class UsuarioService {
         }
     }
 
-    public Boolean login(UsuarioLoginDto usuario) {
+    public Usuario login(UsuarioLoginDto usuario) {
         final Optional<Usuario> us = usuarioRepository.findByEmail(usuario.getEmail());
 
-        return us.isPresent();
+        if (us.isPresent()) {
+            final Usuario usuarioEncontrado = us.get();
+            return usuarioEncontrado.getEmail().equals(usuario.getEmail()) &&
+                    usuarioEncontrado.getSenha().equals(usuario.getSenha()) ? usuarioEncontrado : null;
+        }
+        return null;
     }
 
     public String deletar(String id) {
