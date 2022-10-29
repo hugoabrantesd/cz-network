@@ -1,7 +1,6 @@
 package br.edu.fafic.cz_network.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -28,7 +27,6 @@ public class Usuario implements Serializable {
     private String nomeCompleto;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
-    @Column(nullable = false)
     private LocalDate dataAniversario;
 
     private String descricaoBio;

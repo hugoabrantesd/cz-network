@@ -33,7 +33,6 @@ public class PostagemServiceIMP implements PostagemService {
         if (usuario.isPresent()) {
             Usuario usuarioEncontrado = usuario.get();
             usuarioEncontrado.getPostagens().add(postagem);
-//            usuarioRepository.save(usuarioEncontrado);
 
             return postagemRepository.save(postagem);
         }

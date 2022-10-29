@@ -13,12 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServlet;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -365,7 +363,8 @@ public class UsuarioController {
 
         var contentType = MediaType.IMAGE_JPEG;
 
-        var filePath = "C:\\DEVELOP\\JAVA_PROJECTS\\cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\controller\\" + nome_img + ".jpg";
+        var filePath = "C:\\DEVELOP\\JAVA\\cz-network\\src\\main\\java" +
+                "\\br\\edu\\fafic\\cz_network\\imagens\\" + nome_img + ".jpg";
 
         final File file = new File(filePath);
 
@@ -390,6 +389,38 @@ public class UsuarioController {
                 .status(HttpStatus.OK)
                 .contentType(contentType)
                 .body(new Gson().toJson("Imagem não encontrada!"));
+
+    }
+
+    @PostMapping(value = "/image")
+    public ResponseEntity<Object> saveImage(MultipartFile imageFile, String idUsuario) throws IOException {
+
+        // TODO: salvar imagem ao criar postagem!!!
+
+        final Usuario usuario = usuarioService.buscarPorId(UUID.fromString(idUsuario));
+
+        if (usuario != null) {
+            final String fotoUrl = "C:\\DEVELOP\\JAVA\\cz-network\\src\\main\\java" +
+                    "\\br\\edu\\fafic\\cz_network\\imagens\\"
+                    + usuario.getNomeCompleto();
+
+            File fileToSave = new File(fotoUrl);
+            if (!fileToSave.exists()) {
+                fileToSave.mkdir();
+            }
+
+            fileToSave = new File(fotoUrl + "\\"
+                    + imageFile.getOriginalFilename());
+
+            OutputStream os = new FileOutputStream(fileToSave);
+            os.write(imageFile.getBytes());
+
+
+            usuario.setUrlFoto(fotoUrl);
+
+            return ResponseEntity.ok("Recebi");
+        }
+        return ResponseEntity.badRequest().build();
 
     }
 
