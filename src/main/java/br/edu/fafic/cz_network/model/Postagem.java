@@ -32,6 +32,8 @@ public class Postagem {
 
     private Integer numeroCompartilhamentos;
 
+    private String urlImagemPost;
+
     @OneToOne
     @ToString.Exclude
     @JsonIgnore

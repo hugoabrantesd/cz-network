@@ -363,13 +363,13 @@ public class UsuarioController {
 
         var contentType = MediaType.IMAGE_JPEG;
 
-        var filePath = "C:\\DEVELOP\\JAVA\\cz-network\\src\\main\\java" +
-                "\\br\\edu\\fafic\\cz_network\\imagens\\" + nome_img + ".jpg";
+        var filePath = "C:\\DEVELOP\\JAVA_PROJECTS\\cz-network\\src\\" +
+                "main\\java\\br\\edu\\fafic\\cz_network\\imagens\\Maria Oliveira";
 
-        final File file = new File(filePath);
+        final File file = new File(filePath + "\\" + nome_img);
 
         if (file.exists()) {
-            Path path = Paths.get(filePath);
+            Path path = Paths.get(filePath, nome_img);
             final byte[] imageBytes = Files.readAllBytes(path);
 
             if (imageBytes.length > 0) {
@@ -392,7 +392,7 @@ public class UsuarioController {
 
     }
 
-    @PostMapping(value = "/image")
+    /*@PostMapping(value = "/image")
     public ResponseEntity<Object> saveImage(MultipartFile imageFile, String idUsuario) throws IOException {
 
         // TODO: salvar imagem ao criar postagem!!!
@@ -422,7 +422,7 @@ public class UsuarioController {
         }
         return ResponseEntity.badRequest().build();
 
-    }
+    }*/
 
 }
 

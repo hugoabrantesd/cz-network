@@ -6,8 +6,11 @@ import br.edu.fafic.cz_network.repository.PostagemRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.html.Option;
+import java.io.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,17 +30,34 @@ public class PostagemServiceIMP implements PostagemService {
     }
 
     @Override
-    public Postagem save(Postagem postagem, UUID idUsuario) {
-        final Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+    public Postagem save(String descPostagem, Usuario usuario, MultipartFile imageFile) throws IOException {
 
-        if (usuario.isPresent()) {
-            Usuario usuarioEncontrado = usuario.get();
-            usuarioEncontrado.getPostagens().add(postagem);
+        final String fotoUrl = "C:\\DEVELOP\\JAVA_PROJECTS\\" +
+                "cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\imagens\\" + usuario.getNomeCompleto();
 
-            return postagemRepository.save(postagem);
+        File fileToSave = new File(fotoUrl);
+        if (!fileToSave.exists()) {
+            fileToSave.mkdir();
         }
 
-        return null;
+        fileToSave = new File(fotoUrl + "\\"
+                + imageFile.getOriginalFilename());
+
+        OutputStream os = new FileOutputStream(fileToSave);
+        os.write(imageFile.getBytes());
+        os.close();
+
+        Postagem post = Postagem.builder()
+                .numeroCurtidas(0)
+                .numeroCompartilhamentos(0)
+                .dataHoraPostagem(LocalDateTime.now())
+                .descricao(descPostagem)
+                .urlImagemPost("http://localhost:8080/usuario/" + imageFile.getOriginalFilename())
+                .build();
+
+        usuario.getPostagens().add(post);
+
+        return postagemRepository.save(post);
     }
 
     @Override
