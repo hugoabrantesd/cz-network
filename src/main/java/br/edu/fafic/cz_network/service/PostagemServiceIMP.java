@@ -4,6 +4,7 @@ import br.edu.fafic.cz_network.model.Postagem;
 import br.edu.fafic.cz_network.model.Usuario;
 import br.edu.fafic.cz_network.repository.PostagemRepository;
 import br.edu.fafic.cz_network.repository.UsuarioRepository;
+import br.edu.fafic.cz_network.utils.ImageSave;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,7 @@ public class PostagemServiceIMP implements PostagemService {
                 "cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\imagens\\" + usuario.getNomeCompleto();
 
         File fileToSave = new File(fotoUrl);
+
         if (!fileToSave.exists()) {
             fileToSave.mkdir();
         }
@@ -43,9 +45,7 @@ public class PostagemServiceIMP implements PostagemService {
         fileToSave = new File(fotoUrl + "\\"
                 + imageFile.getOriginalFilename());
 
-        OutputStream os = new FileOutputStream(fileToSave);
-        os.write(imageFile.getBytes());
-        os.close();
+        ImageSave.save(fileToSave, imageFile);
 
         Postagem post = Postagem.builder()
                 .numeroCurtidas(0)

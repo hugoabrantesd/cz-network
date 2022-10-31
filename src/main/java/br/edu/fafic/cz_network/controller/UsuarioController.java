@@ -34,7 +34,19 @@ public class UsuarioController {
     }
 
     @PostMapping(value = "/salvar")
-    public ResponseEntity<Object> salvar(@RequestBody Usuario user) {
+    public ResponseEntity<Object> salvar(@RequestParam("user") Usuario user, @RequestParam("image") MultipartFile image) throws IOException {
+        System.out.println(user);
+        Usuario usuario = usuarioService.salvarComImagem(user, image);
+
+        if (usuario != null) {
+            return ResponseEntity.status(CodigosHTTP.CREATED).body(usuario);
+        }
+        return ResponseEntity.badRequest().body("[]");
+    }
+
+    @PostMapping(value = "/salvar-sem-imagem")
+    public ResponseEntity<Object> salvarSemImagem(@RequestBody Usuario user) {
+        System.out.println(user);
         Usuario usuario = usuarioService.salvar(user);
 
         if (usuario != null) {

@@ -3,8 +3,12 @@ package br.edu.fafic.cz_network.service;
 import br.edu.fafic.cz_network.dto.UsuarioLoginDto;
 import br.edu.fafic.cz_network.model.*;
 import br.edu.fafic.cz_network.repository.*;
+import br.edu.fafic.cz_network.utils.ImageSave;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -31,6 +35,38 @@ public class UsuarioService {
         this.enderecoRepository = enderecoRepository;
         this.notificacaoRepository = notificacaoRepository;
         this.postagemService = postagemService;
+    }
+
+    public Usuario salvarComImagem(Usuario usuario, MultipartFile image) throws IOException {
+
+        final String fotoUrl = "C:\\DEVELOP\\JAVA_PROJECTS\\" +
+                "cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\imagens\\" + usuario.getNomeCompleto();
+
+        File fileToSave = new File(fotoUrl);
+
+        if (!fileToSave.exists()) {
+            fileToSave.mkdir();
+        }
+
+        fileToSave = new File(fotoUrl + "\\"
+                + image.getOriginalFilename());
+
+        ImageSave.save(fileToSave, image);
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            usuario.setContaCriadaEm(LocalDate.now());
+            String dataFormatada = formatter.format(usuario.getContaCriadaEm());
+            LocalDate localDate = LocalDate.parse(dataFormatada, formatter);
+            usuario.setContaCriadaEm(localDate);
+            usuario.setUrlFoto("http://localhost:8080/usuario/" + image.getOriginalFilename());
+
+            return usuarioRepository.save(usuario);
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar usuário".toUpperCase());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Usuario salvar(Usuario usuario) {

@@ -24,10 +24,8 @@ public class PostagemControler {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping("/save/{id-usuario}")
+    @PostMapping("/save")
     public ResponseEntity<Object> save(MultipartFile imageFile, String idUsuario, String descPostagem) throws IOException {
-
-        // TODO: salvar imagem ao criar postagem!!!
 
         final Usuario usuario = usuarioService.buscarPorId(UUID.fromString(idUsuario));
         System.out.println(descPostagem);
