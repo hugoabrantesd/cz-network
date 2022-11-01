@@ -35,6 +35,6 @@ Tecnologias utilizadas:
 # Autores
 
 #### Hugo Abrantes de Lira
-#### Taylson Leite
-
 Linkedin: https://www.linkedin.com/in/hugoabrantesd
+
+#### Taylson Leite
