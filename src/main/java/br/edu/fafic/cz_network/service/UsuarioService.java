@@ -7,7 +7,6 @@ import br.edu.fafic.cz_network.utils.ImageSave;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -37,36 +36,19 @@ public class UsuarioService {
         this.postagemService = postagemService;
     }
 
-    public Usuario salvarComImagem(Usuario usuario, MultipartFile image) throws IOException {
+    public Usuario salvarImagemUsuario(Usuario usuario, MultipartFile image) throws IOException {
 
-        final String fotoUrl = "C:\\DEVELOP\\JAVA_PROJECTS\\" +
-                "cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\imagens\\" + usuario.getNomeCompleto();
-
-        File fileToSave = new File(fotoUrl);
-
-        if (!fileToSave.exists()) {
-            fileToSave.mkdir();
-        }
-
-        fileToSave = new File(fotoUrl + "\\"
-                + image.getOriginalFilename());
-
-        ImageSave.save(fileToSave, image);
+        new ImageSave().save(image, usuario);
 
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            usuario.setContaCriadaEm(LocalDate.now());
-            String dataFormatada = formatter.format(usuario.getContaCriadaEm());
-            LocalDate localDate = LocalDate.parse(dataFormatada, formatter);
-            usuario.setContaCriadaEm(localDate);
-            usuario.setUrlFoto("http://localhost:8080/usuario/" + image.getOriginalFilename());
+            usuario.setUrlFoto("http://localhost:8080/usuario/" + usuario.getId() + "/" + image.getOriginalFilename());
 
             return usuarioRepository.save(usuario);
         } catch (Exception e) {
             System.out.println("Erro ao salvar usuário".toUpperCase());
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -97,9 +79,9 @@ public class UsuarioService {
         return null;
     }
 
-    public String deletar(String id) {
+    public String deletar(Long id) {
         try {
-            Usuario usuario = buscarPorId(UUID.fromString(id));
+            Usuario usuario = buscarPorId(id);
             if (usuario != null) {
                 usuarioRepository.delete(usuario);
                 return "";
@@ -114,7 +96,7 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId(UUID id) {
+    public Usuario buscarPorId(Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         return usuario.orElse(null);
     }
@@ -134,7 +116,7 @@ public class UsuarioService {
         }
     }
 
-    public Usuario adicionarInteresse(UUID idUsuario, List<InteressesPessoais> interesses) {
+    public Usuario adicionarInteresse(Long idUsuario, List<InteressesPessoais> interesses) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
@@ -146,12 +128,12 @@ public class UsuarioService {
         return null;
     }
 
-    public InteressesPessoais buscarInteressesPessoais(UUID idInteresse) {
+    public InteressesPessoais buscarInteressesPessoais(Long idInteresse) {
         Optional<InteressesPessoais> interessesPessoais = interessesRepository.findById(idInteresse);
         return interessesPessoais.orElse(null);
     }
 
-    public List<InteressesPessoais> buscarTodosInteressesPessoais(UUID idUsuario) {
+    public List<InteressesPessoais> buscarTodosInteressesPessoais(Long idUsuario) {
         Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -160,7 +142,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario atualizarInteresse(UUID idUsuario, InteressesPessoais interesse) {
+    public Usuario atualizarInteresse(Long idUsuario, InteressesPessoais interesse) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
@@ -177,7 +159,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deletarInteresse(UUID idUsuario, UUID idInteresse) {
+    public Usuario deletarInteresse(Long idUsuario, Long idInteresse) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
@@ -191,7 +173,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deletarTodosInteresses(UUID idUsuario) {
+    public Usuario deletarTodosInteresses(Long idUsuario) {
         final Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null && !usuario.getInteressesPessoais().isEmpty()) {
@@ -201,7 +183,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario adicionarEducacao(List<Educacao> educacaoList, UUID idUsuario) {
+    public Usuario adicionarEducacao(List<Educacao> educacaoList, Long idUsuario) {
         Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -213,12 +195,12 @@ public class UsuarioService {
         return null;
     }
 
-    public Educacao buscarEducacao(UUID idEducacao) {
+    public Educacao buscarEducacao(Long idEducacao) {
         Optional<Educacao> educacao = educacaoRepository.findById(idEducacao);
         return educacao.orElse(null);
     }
 
-    public List<Educacao> buscarTodaEducacao(UUID idUsuario) {
+    public List<Educacao> buscarTodaEducacao(Long idUsuario) {
         Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -227,7 +209,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario atualizarEducacao(UUID idUsuario, Educacao educacao) {
+    public Usuario atualizarEducacao(Long idUsuario, Educacao educacao) {
         final Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -244,7 +226,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deletarEducacao(UUID idUsuario, UUID idEducacao) {
+    public Usuario deletarEducacao(Long idUsuario, Long idEducacao) {
         final Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -259,7 +241,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deletarTodaEducacao(UUID idUsuario) {
+    public Usuario deletarTodaEducacao(Long idUsuario) {
         final Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null && !usuario.getEducacao().isEmpty()) {
@@ -269,7 +251,7 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario adicionarEndereco(List<Endereco> enderecos, UUID idUsuario) {
+    public Usuario adicionarEndereco(List<Endereco> enderecos, Long idUsuario) {
         Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -281,12 +263,12 @@ public class UsuarioService {
         return null;
     }
 
-    public Endereco buscarEndereco(UUID idEndereco) {
+    public Endereco buscarEndereco(Long idEndereco) {
         Optional<Endereco> endereco = enderecoRepository.findById(idEndereco);
         return endereco.orElse(null);
     }
 
-    public List<Endereco> buscarTodosEnderecos(UUID idUsuario) {
+    public List<Endereco> buscarTodosEnderecos(Long idUsuario) {
         Usuario usuario = buscarPorId(idUsuario);
 
         if (usuario != null) {
@@ -295,7 +277,7 @@ public class UsuarioService {
         return null;
     }
 
-    public boolean atualizarEndereco(UUID idUsuario, Endereco endereco) {
+    public boolean atualizarEndereco(Long idUsuario, Endereco endereco) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null) {
@@ -312,7 +294,7 @@ public class UsuarioService {
         return false;
     }
 
-    public boolean deletarEndereco(UUID idUsuario, UUID idEndereco) {
+    public boolean deletarEndereco(Long idUsuario, Long idEndereco) {
         Usuario usuarioEncontrado = buscarPorId(idUsuario);
 
         if (usuarioEncontrado != null && usuarioEncontrado.getEnderecos().size() > 1) {
@@ -331,9 +313,9 @@ public class UsuarioService {
 
         //System.out.println(notificacao.getAcao().getNome());
 
-        UUID idAutor = notificacao.getIdUsuarioAutor();
-        UUID idReceptor = notificacao.getIdUsuarioReceptor();
-        UUID idPostagem = notificacao.getIdPostagemAcionada();
+        Long idAutor = notificacao.getIdUsuarioAutor();
+        Long idReceptor = notificacao.getIdUsuarioReceptor();
+        Long idPostagem = notificacao.getIdPostagemAcionada();
 
         Usuario autorEncontrado = buscarPorId(idAutor);
         Usuario receptorEncontrado = buscarPorId(idReceptor);
@@ -349,7 +331,7 @@ public class UsuarioService {
         return null;
     }
 
-    public List<Notificacao> retornarNotificacoes(UUID idUsuario) {
+    public List<Notificacao> retornarNotificacoes(Long idUsuario) {
         final Usuario usuario = buscarPorId(idUsuario);
         if (usuario != null) {
             return usuario.getNotificacoes();
@@ -385,7 +367,7 @@ public class UsuarioService {
         return false;
     }
 
-    public Acao retornarAcaoNotificacao(UUID idNotificacao) {
+    public Acao retornarAcaoNotificacao(Long idNotificacao) {
         final Optional<Notificacao> notificacaoSelecionada = notificacaoRepository.findById(idNotificacao);
 
         if (notificacaoSelecionada.isPresent()) {
@@ -395,7 +377,7 @@ public class UsuarioService {
         return null;
     }
 
-    public boolean atualizarAcaoNotificacao(UUID idNotificacao, Acao acao) {
+    public boolean atualizarAcaoNotificacao(Long idNotificacao, Acao acao) {
         final Optional<Notificacao> notificacaoSelecionada = notificacaoRepository.findById(idNotificacao);
 
         if (notificacaoSelecionada.isPresent() && acao != null && !acao.getNomeAcao().isEmpty()) {

@@ -33,26 +33,14 @@ public class PostagemServiceIMP implements PostagemService {
     @Override
     public Postagem save(String descPostagem, Usuario usuario, MultipartFile imageFile) throws IOException {
 
-        final String fotoUrl = "C:\\DEVELOP\\JAVA_PROJECTS\\" +
-                "cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\imagens\\" + usuario.getNomeCompleto();
-
-        File fileToSave = new File(fotoUrl);
-
-        if (!fileToSave.exists()) {
-            fileToSave.mkdir();
-        }
-
-        fileToSave = new File(fotoUrl + "\\"
-                + imageFile.getOriginalFilename());
-
-        ImageSave.save(fileToSave, imageFile);
+        new ImageSave().save(imageFile, usuario, true);
 
         Postagem post = Postagem.builder()
                 .numeroCurtidas(0)
                 .numeroCompartilhamentos(0)
                 .dataHoraPostagem(LocalDateTime.now())
                 .descricao(descPostagem)
-                .urlImagemPost("http://localhost:8080/usuario/" + imageFile.getOriginalFilename())
+                .urlImagemPost("http://localhost:8080/postagem/" + usuario.getId() + "/" + imageFile.getOriginalFilename())
                 .build();
 
         usuario.getPostagens().add(post);
@@ -78,7 +66,7 @@ public class PostagemServiceIMP implements PostagemService {
     }
 
     @Override
-    public Postagem findById(UUID id) {
+    public Postagem findById(Long id) {
         Optional<Postagem> postagemOptional = postagemRepository.findById(id);
         return postagemOptional.orElseThrow(() -> new RuntimeException("Postagem não encontrada"));
     }

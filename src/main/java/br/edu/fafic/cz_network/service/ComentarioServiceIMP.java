@@ -67,7 +67,7 @@ public class ComentarioServiceIMP implements ComentarioService {
     }
 
     @Override
-    public Comentario buscarPorId(UUID id) {
+    public Comentario buscarPorId(Long id) {
         Optional<Comentario> comentarioOptional = comentarioRepository.findById(id);
         return comentarioOptional.orElseThrow(() -> new RuntimeException("Comentario não encontrado"));
     }

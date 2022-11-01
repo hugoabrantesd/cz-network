@@ -20,7 +20,7 @@ public class Postagem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     private String descricao;
 

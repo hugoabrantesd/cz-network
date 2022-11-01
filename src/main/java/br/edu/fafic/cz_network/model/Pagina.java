@@ -21,7 +21,7 @@ public class Pagina {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
     private String nome;
     private String sobre;
     private String foto;

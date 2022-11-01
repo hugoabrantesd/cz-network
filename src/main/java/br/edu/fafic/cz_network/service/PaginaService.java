@@ -11,8 +11,8 @@ public interface PaginaService {
    Pagina save(Pagina pagina, Categoria categoria);
    Pagina delete(Pagina pagina);
    Pagina update(Pagina pagina);
-   Pagina findById(UUID id);
+   Pagina findById(Long id);
    List<Pagina> listar();
-   Pagina deletarCategoria(UUID idPagina);
+   Pagina deletarCategoria(Long idPagina);
 
 }

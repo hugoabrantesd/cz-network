@@ -36,7 +36,7 @@ public class PaginaControler {
         return ResponseEntity.ok().body(paginaServiceIMP.update(pagina));
     }
     @GetMapping("/get/{id}")
-    public ResponseEntity search(@PathVariable UUID id){
+    public ResponseEntity search(@PathVariable Long id){
         return ResponseEntity.ok().body(paginaServiceIMP.findById(id));
     }
     @GetMapping("/get-all")
@@ -52,8 +52,8 @@ public class PaginaControler {
 //        return ResponseEntity.ok().body(categoriaServiceIMP.update(categoria));
 //    }
     @DeleteMapping("/categoria/deletar")
-    public ResponseEntity deletar(@RequestBody String idPagina){
-        paginaServiceIMP.deletarCategoria(UUID.fromString(idPagina));
+    public ResponseEntity deletar(@RequestBody Long idPagina){
+        paginaServiceIMP.deletarCategoria(idPagina);
         return ResponseEntity.ok().body(" ");
     }
 

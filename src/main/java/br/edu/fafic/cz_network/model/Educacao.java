@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Educacao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     private String nomeEscola;
 

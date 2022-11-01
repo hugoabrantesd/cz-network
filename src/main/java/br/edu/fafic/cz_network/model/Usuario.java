@@ -24,8 +24,7 @@ public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    private UUID id;
+    private Long id;
 
     private String nomeCompleto;
 

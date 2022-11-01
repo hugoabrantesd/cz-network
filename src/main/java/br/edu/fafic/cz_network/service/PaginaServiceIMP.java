@@ -39,7 +39,7 @@ public class PaginaServiceIMP implements PaginaService {
     }
 
     @Override
-    public Pagina findById(UUID id) {
+    public Pagina findById(Long id) {
         Optional<Pagina> paginaOptional = paginaRepository.findById(id);
         return paginaOptional.orElseThrow(() -> new RuntimeException("Pagina não encontrada!!"));
     }
@@ -50,7 +50,7 @@ public class PaginaServiceIMP implements PaginaService {
     }
 
     @Override
-    public Pagina deletarCategoria(UUID idPagina) {
+    public Pagina deletarCategoria(Long idPagina) {
         Pagina pagina = findById(idPagina);
         if(pagina != null){
             pagina.setCategoria(null);

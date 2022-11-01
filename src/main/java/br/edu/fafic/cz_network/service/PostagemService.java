@@ -14,6 +14,6 @@ public interface PostagemService{
     Postagem save(String descPostagem, Usuario usuario, MultipartFile imageFile) throws IOException;
     Postagem delete(Postagem postagem);
     Postagem update(Postagem postagem);
-    Postagem findById(UUID id);
+    Postagem findById(Long id);
     List<Postagem> listar();
 }

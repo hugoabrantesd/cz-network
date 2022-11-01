@@ -10,6 +10,6 @@ public interface ComentarioService {
     Comentario salvar(Comentario comentario);
     String deletar(Comentario comentario);
     Comentario atualizar(Comentario comentario);
-    Comentario buscarPorId(UUID id);
+    Comentario buscarPorId(Long id);
     List<Comentario> buscarTodos();
 }

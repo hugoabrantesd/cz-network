@@ -31,7 +31,7 @@ public class ComentarioController {
         return ResponseEntity.ok().body(comentarioServiceIMP.atualizar(comentario));
     }
     @GetMapping("/buscar/{id}")
-    public ResponseEntity buscarPoId(@PathVariable UUID id){
+    public ResponseEntity buscarPoId(@PathVariable Long id){
         return ResponseEntity.ok().body(comentarioServiceIMP.buscarPorId(id));
     }
     @GetMapping("/buscar-todos")

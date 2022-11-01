@@ -18,16 +18,16 @@ public class Notificacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
-    private UUID idUsuarioAutor;
+    private Long idUsuarioAutor;
 
-    private UUID idUsuarioReceptor;
+    private Long idUsuarioReceptor;
 
     @Embedded
     private Acao acao;
 
-    private UUID idPostagemAcionada;
+    private Long idPostagemAcionada;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate dataHoraNotificacao;

@@ -6,21 +6,21 @@ import br.edu.fafic.cz_network.service.UsuarioService;
 import br.edu.fafic.cz_network.utils.CodigosHTTP;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServlet;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/usuario")
@@ -34,14 +34,30 @@ public class UsuarioController {
     }
 
     @PostMapping(value = "/salvar")
-    public ResponseEntity<Object> salvar(@RequestParam("user") Usuario user, @RequestParam("image") MultipartFile image) throws IOException {
+    public ResponseEntity<Object> salvar(@RequestBody Usuario user) {
+        System.out.println();
         System.out.println(user);
-        /*Usuario usuario = usuarioService.salvarComImagem(user, image);
+        final Usuario usuario = usuarioService.salvar(user);
 
         if (usuario != null) {
             return ResponseEntity.status(CodigosHTTP.CREATED).body(usuario);
-        }*/
+        }
         return ResponseEntity.badRequest().body("[]");
+    }
+
+    @PostMapping(value = "/salvar-imagem-usuario")
+    public ResponseEntity<Object> salvarImagemUsuario(
+            @RequestParam(value = "image") MultipartFile image,
+            @RequestParam(value = "idUsuario") String idUsuario
+    ) throws IOException {
+
+        final Usuario usuario = usuarioService.buscarPorId(Long.parseLong(idUsuario));
+
+        if (usuario != null) {
+            Usuario usuarioSalvo = usuarioService.salvarImagemUsuario(usuario, image);
+            return ResponseEntity.ok().body(usuarioSalvo);
+        }
+        return ResponseEntity.badRequest().body("Erro ao salvar imagem!");
     }
 
     @PostMapping(value = "/salvar-sem-imagem")
@@ -61,7 +77,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping(value = "/deletar/{id}")
-    public ResponseEntity<String> deletar(@PathVariable String id) {
+    public ResponseEntity<String> deletar(@PathVariable Long id) {
         String resposta = usuarioService.deletar(id);
 
         if (resposta.isEmpty()) {
@@ -76,10 +92,10 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/buscar/{id}")
-    public ResponseEntity<Object> buscarPorId(@PathVariable String id) {
+    public ResponseEntity<Object> buscarPorId(@PathVariable Long id) {
 
         try {
-            Usuario usuario = usuarioService.buscarPorId(UUID.fromString(id));
+            Usuario usuario = usuarioService.buscarPorId(id);
 
             if (usuario != null) {
                 return ResponseEntity.ok().body(usuario);
@@ -102,7 +118,7 @@ public class UsuarioController {
     @PostMapping(value = "/interesses/adicionar/{idUsuario}")
     public ResponseEntity<Object> adicionarInteresses(
             @RequestBody LinkedTreeMap<String, List<InteressesPessoais>> interesses,
-            @PathVariable UUID idUsuario) {
+            @PathVariable Long idUsuario) {
 
         Usuario usuarioAtualizado = usuarioService
                 .adicionarInteresse(idUsuario, interesses.get("interessesPessoais"));
@@ -114,7 +130,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/interesses/buscar/{idInteresse}")
-    public ResponseEntity<Object> buscarInteresses(@PathVariable UUID idInteresse) {
+    public ResponseEntity<Object> buscarInteresses(@PathVariable Long idInteresse) {
 
         InteressesPessoais interesseEncontrado = usuarioService.buscarInteressesPessoais(idInteresse);
         if (interesseEncontrado != null) {
@@ -125,7 +141,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/interesses/buscar-todos/{idUsuario}")
-    public ResponseEntity<Object> buscarTodosInteresses(@PathVariable UUID idUsuario) {
+    public ResponseEntity<Object> buscarTodosInteresses(@PathVariable Long idUsuario) {
 
         List<InteressesPessoais> interessesEncontrados = usuarioService.buscarTodosInteressesPessoais(idUsuario);
         if (interessesEncontrados != null) {
@@ -138,7 +154,7 @@ public class UsuarioController {
     @PatchMapping(value = "/interesses/atualizar/{idUsuario}")
     public ResponseEntity<Object> atualizarInteresses(
             @RequestBody InteressesPessoais interesse,
-            @PathVariable UUID idUsuario) {
+            @PathVariable Long idUsuario) {
 
         Usuario usuarioAtualizado = usuarioService.atualizarInteresse(idUsuario, interesse);
         if (usuarioAtualizado != null) {
@@ -150,8 +166,8 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/interesses/deletar/{idUsuario}/{idInteresse}")
     public ResponseEntity<Object> deletarInteresse(
-            @PathVariable UUID idUsuario,
-            @PathVariable UUID idInteresse) {
+            @PathVariable Long idUsuario,
+            @PathVariable Long idInteresse) {
 
         Usuario usuarioAtualizado = usuarioService.deletarInteresse(idUsuario, idInteresse);
         if (usuarioAtualizado != null) {
@@ -161,7 +177,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping(value = "/interesses/deletar-todos/{idUsuario}")
-    public ResponseEntity<Object> deletarTodosInteresse(@PathVariable UUID idUsuario) {
+    public ResponseEntity<Object> deletarTodosInteresse(@PathVariable Long idUsuario) {
 
         Usuario usuarioAtualizado = usuarioService.deletarTodosInteresses(idUsuario);
         if (usuarioAtualizado != null) {
@@ -172,7 +188,7 @@ public class UsuarioController {
 
     @PostMapping(value = "/educacao/adicionar/{idUsuario}")
     public ResponseEntity<Object> adicionarEducacao(
-            @PathVariable UUID idUsuario, @RequestBody LinkedTreeMap<String, List<Educacao>> educacaoList) {
+            @PathVariable Long idUsuario, @RequestBody LinkedTreeMap<String, List<Educacao>> educacaoList) {
         Usuario usuarioComEducacaoAtualizada = usuarioService
                 .adicionarEducacao(educacaoList.get("educacao"), idUsuario);
 
@@ -183,7 +199,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/educacao/buscar/{idEducacao}")
-    public ResponseEntity<Object> buscarEducacao(@PathVariable UUID idEducacao) {
+    public ResponseEntity<Object> buscarEducacao(@PathVariable Long idEducacao) {
         Educacao educacao = usuarioService.buscarEducacao(idEducacao);
 
         if (educacao != null) {
@@ -193,7 +209,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/educacao/buscar-tudo/{idUsuario}")
-    public ResponseEntity<Object> buscarTodaEducacao(@PathVariable UUID idUsuario) {
+    public ResponseEntity<Object> buscarTodaEducacao(@PathVariable Long idUsuario) {
         List<Educacao> educacaoList = usuarioService.buscarTodaEducacao(idUsuario);
 
         if (educacaoList != null) {
@@ -204,7 +220,7 @@ public class UsuarioController {
 
     @PatchMapping(value = "/educacao/atualizar/{idUsuario}")
     public ResponseEntity<Object> atualizarEducacao(
-            @PathVariable UUID idUsuario, @RequestBody Educacao educacao) {
+            @PathVariable Long idUsuario, @RequestBody Educacao educacao) {
 
         Usuario usuarioComEducacaoAtualizada = usuarioService.atualizarEducacao(idUsuario, educacao);
 
@@ -216,8 +232,8 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/educacao/deletar/{idUsuario}/{idEducacao}")
     public ResponseEntity<Object> deletarEducacao(
-            @PathVariable UUID idUsuario,
-            @PathVariable UUID idEducacao) {
+            @PathVariable Long idUsuario,
+            @PathVariable Long idEducacao) {
 
         Usuario usuarioComEducacaoAtualizada = usuarioService.deletarEducacao(idUsuario, idEducacao);
 
@@ -228,7 +244,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping(value = "/educacao/deletar-toda-educacao/{idUsuario}")
-    public ResponseEntity<Object> deletarTodaEducacao(@PathVariable UUID idUsuario) {
+    public ResponseEntity<Object> deletarTodaEducacao(@PathVariable Long idUsuario) {
         Usuario usuarioComEducacaoAtualizada = usuarioService.deletarTodaEducacao(idUsuario);
 
         if (usuarioComEducacaoAtualizada != null) {
@@ -239,7 +255,7 @@ public class UsuarioController {
 
     @PostMapping(value = "/endereco/adicionar/{idUsuario}")
     public ResponseEntity<Object> adicionarEndereco(
-            @PathVariable UUID idUsuario, @RequestBody LinkedTreeMap<String, List<Endereco>> enderecos) {
+            @PathVariable Long idUsuario, @RequestBody LinkedTreeMap<String, List<Endereco>> enderecos) {
 
         Usuario usuarioComEnderecoAtualizado = usuarioService
                 .adicionarEndereco(enderecos.get("enderecos"), idUsuario);
@@ -251,7 +267,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/endereco/buscar/{idEndereco}")
-    public ResponseEntity<Object> buscarEndereco(@PathVariable UUID idEndereco) {
+    public ResponseEntity<Object> buscarEndereco(@PathVariable Long idEndereco) {
         Endereco enderecoEncontrado = usuarioService.buscarEndereco(idEndereco);
 
         if (enderecoEncontrado != null) {
@@ -261,7 +277,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/endereco/buscar-tudo/{idUsuario}")
-    public ResponseEntity<Object> buscarTodosEnderecos(@PathVariable UUID idUsuario) {
+    public ResponseEntity<Object> buscarTodosEnderecos(@PathVariable Long idUsuario) {
         List<Endereco> enderecosEncontrados = usuarioService.buscarTodosEnderecos(idUsuario);
 
         if (enderecosEncontrados != null) {
@@ -272,7 +288,7 @@ public class UsuarioController {
 
     @PatchMapping(value = "/endereco/atualizar/{idUsuario}")
     public ResponseEntity<Object> atualizarEndereco(
-            @PathVariable UUID idUsuario, @RequestBody Endereco endereco) {
+            @PathVariable Long idUsuario, @RequestBody Endereco endereco) {
 
         boolean enderecoAtualizado = usuarioService.atualizarEndereco(idUsuario, endereco);
 
@@ -284,7 +300,7 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/endereco/deletar/{idUsuario}/{idEndereco}")
     public ResponseEntity<Object> deletarEndereco(
-            @PathVariable UUID idUsuario, @PathVariable UUID idEndereco) {
+            @PathVariable Long idUsuario, @PathVariable Long idEndereco) {
 
         boolean enderecoDeletado = usuarioService.deletarEndereco(idUsuario, idEndereco);
 
@@ -307,7 +323,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/notificacao/retornar-todas/{idUsuario}")
-    public ResponseEntity<Object> retornarNotificacoes(@PathVariable UUID idUsuario) {
+    public ResponseEntity<Object> retornarNotificacoes(@PathVariable Long idUsuario) {
         List<Notificacao> notificacoesEncontradas = usuarioService.retornarNotificacoes(idUsuario);
 
         if (notificacoesEncontradas != null) {
@@ -341,7 +357,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/notificacao/acao/buscar/{idNotificacao}")
-    public ResponseEntity<Object> retornarAcaoNotificacao(@PathVariable UUID idNotificacao) {
+    public ResponseEntity<Object> retornarAcaoNotificacao(@PathVariable Long idNotificacao) {
         Acao acaoEncontrada = usuarioService.retornarAcaoNotificacao(idNotificacao);
 
         if (acaoEncontrada != null) {
@@ -357,7 +373,7 @@ public class UsuarioController {
         HashMap<String, Object> json = new Gson().fromJson(dados, HashMap.class);
         LinkedTreeMap<String, String> data = (LinkedTreeMap) json.get("acao");
 
-        UUID idNotificacao = UUID.fromString(String.valueOf(json.get("idNotificacao")));
+        Long idNotificacao = (Long.parseLong(json.get("idNotificacao").toString()));
         String nomeAcao = data.get("nomeAcao");
 
         Acao acao = Acao.builder().nomeAcao(nomeAcao).build();
@@ -370,13 +386,13 @@ public class UsuarioController {
         return ResponseEntity.status(CodigosHTTP.NOT_FOUND).body(MENSAGEM_ERRO);
     }
 
-    @GetMapping(value = "/{nome_img}")
-    public ResponseEntity<Object> getImage(@PathVariable String nome_img) throws IOException {
+    @GetMapping(value = "/{id}/{nome_img}")
+    public ResponseEntity<Object> getImage(@PathVariable String nome_img,
+                                           @PathVariable String id) throws IOException {
 
         var contentType = MediaType.IMAGE_JPEG;
 
-        var filePath = "C:\\DEVELOP\\JAVA_PROJECTS\\cz-network\\src\\" +
-                "main\\java\\br\\edu\\fafic\\cz_network\\imagens\\Maria Oliveira";
+        var filePath = "C:\\DEVELOP\\JAVA\\cz-network\\src\\main\\java\\br\\edu\\fafic\\cz_network\\imagens\\" + id;
 
         final File file = new File(filePath + "\\" + nome_img);
 
@@ -409,7 +425,7 @@ public class UsuarioController {
 
         // TODO: salvar imagem ao criar postagem!!!
 
-        final Usuario usuario = usuarioService.buscarPorId(UUID.fromString(idUsuario));
+        final Usuario usuario = usuarioService.buscarPorId((idUsuario));
 
         if (usuario != null) {
             final String fotoUrl = "C:\\DEVELOP\\JAVA\\cz-network\\src\\main\\java" +

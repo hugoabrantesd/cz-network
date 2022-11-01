@@ -19,7 +19,7 @@ public class Comentario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
     private String texto;
     @ManyToOne
     private Usuario usuario;
