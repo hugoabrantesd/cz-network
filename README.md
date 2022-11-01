@@ -36,6 +36,6 @@ Tecnologias utilizadas:
 
 ### Hugo Abrantes de Lira
 Linkedin: https://www.linkedin.com/in/hugoabrantesd
-
+# 
 
 Taylson Leite
